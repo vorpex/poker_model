@@ -1,16 +1,16 @@
-''' poker hand evaluator '''
+'''poker hand evaluator'''
 
 # pylint: disable=W0612
 
 import itertools
 
 def best_hand(hand):
-    ''' from a 7-card hand, return the best 5 card hand '''
+    '''from a 7-card hand, return the best 5 card hand'''
 
     return max(itertools.combinations(hand, 5), key=hand_rank)
 
 def hand_rank(hand):
-    ''' return a value indicating the ranking of a hand '''
+    '''return a value indicating the ranking of a hand'''
 
     ranks = card_ranks(hand)
     if straight(ranks) and flush(hand):
@@ -49,7 +49,7 @@ def hand_rank(hand):
         return 0, ranks
 
 def card_ranks(hand):
-    ''' return a list of the ranks, sorted with higher first '''
+    '''return a list of the ranks, sorted with higher first'''
 
     ranks = ['--23456789TJQKA'.index(r) for r, s in hand]
     ranks.sort(reverse=True)
@@ -57,19 +57,19 @@ def card_ranks(hand):
     return [5, 4, 3, 2, 1] if (ranks == [14, 5, 4, 3, 2]) else ranks
 
 def flush(hand):
-    ''' return True if all the cards have the same suit '''
+    '''return True if all the cards have the same suit'''
 
     suits = [s for r, s in hand]
     return len(set(suits)) == 1
 
 def straight(ranks):
-    ''' return True if the ordered ranks form a 5-card straight '''
+    '''return True if the ordered ranks form a 5-card straight'''
 
     return (max(ranks) - min(ranks) == 4) and len(set(ranks)) == 5
 
 def kind(n, ranks):
-    ''' return the first rank that this hand has exactly n-of-a-kind of. Return None if there is no 
-    n-of-a-kind in the hand '''
+    '''return the first rank that this hand has exactly n-of-a-kind of. Return None if there is no 
+    n-of-a-kind in the hand'''
 
     for r in ranks:
 
@@ -79,7 +79,7 @@ def kind(n, ranks):
     return None
 
 def two_pair(ranks):
-    ''' if there are two pair here, return the two ranks of the two pairs, else None '''
+    '''if there are two pair here, return the two ranks of the two pairs, else None'''
 
     pair = kind(2, ranks)
     lowpair = kind(2, list(reversed(ranks)))

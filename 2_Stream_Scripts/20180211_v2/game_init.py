@@ -1,4 +1,4 @@
-''' game initialization '''
+'''game initialization'''
 
 # pylint: disable=E1601, W0612
 
@@ -10,13 +10,13 @@ import player
 import pot
 
 def init_players(nr_of_players, starting_chips):
-    ''' players initialization '''
+    '''players initialization'''
 
     PLAYERS = [player.Player(i, starting_chips) for i in range(nr_of_players)]
     return PLAYERS
 
 def init_game(players, round):
-    ''' table initialization '''
+    '''table initialization'''
 
     DECK = deck.Deck()
     BOARD = board.Board(DECK.make_board())

@@ -1,4 +1,4 @@
-''' poker test '''
+'''poker test'''
 
 # pylint: disable=E1101, E1601
 

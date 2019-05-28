@@ -1,20 +1,20 @@
-''' card class '''
+'''card class'''
 
 # pylint: disable=E1601
 
 class Card(object):
-    ''' card class '''
-
+    '''card class'''
+    
     def __init__(self, card):
-        ''' card initialization; Card('8s'), Card('QC') '''
-
+        '''card initialization'''
+       
         self.__figure = card[0]
         self.__color = card[1].upper()
         self.__card = self.__figure + self.__color
 
         if self.__figure == 'A':
-            self.__value = 14
-        
+           self.__value = 14
+       
         elif self.__figure == 'K':
             self.__value = 13
         
@@ -31,21 +31,21 @@ class Card(object):
             self.__value = int(self.__figure)
 
     def show_card(self):
-        ''' show card '''
+        '''show card'''
 
         return self.__card
 
     def figure(self):
-        ''' show figure '''
+        '''show figure'''
 
         return self.__figure
 
     def color(self):
-        ''' show color '''
+        '''show color'''
 
         return self.__color
 
     def value(self):
-        ''' show value '''
+        '''show value'''
 
         return self.__value
