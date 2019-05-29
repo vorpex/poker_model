@@ -20,7 +20,10 @@ class Deck(object):
             i += 1
 
     def __init__(self):
-        '''deck initialization'''
+        '''deck initialization
+        
+        >>> deck = Deck()
+        '''
 
         self.__deck = []
         for color in self.colors:
@@ -30,12 +33,18 @@ class Deck(object):
                 self.__deck.append(card.Card(figure + color))
 
     def show_deck(self):
-        '''show deck'''
+        '''show deck
+        
+        >>> deck.show_deck()
+        '''
         
         return self.__deck
 
     def nth_card(self, n):
-        '''show the n-th card from deck'''
+        '''show the n-th card from deck
+        
+        >>> deck.nth_card()
+        '''
         
         try:
             return self.__deck[n]
@@ -45,7 +54,10 @@ class Deck(object):
             pass
     
     def draw_by_number(self, nr):
-        '''pick card from deck by nr'''
+        '''pick card from deck by nr
+        
+        >>> deck.draw_by_number()
+        '''
         
         try:
             pick = self.__deck[nr]
@@ -57,12 +69,15 @@ class Deck(object):
             pass
 
     def draw_by_name(self, name):
-        '''pick card from deck by name'''
+        '''pick card from deck by name
+        
+        >>> deck.draw_by_name()
+        '''
 
         flag = 0
         for pick in self.__deck:
         
-            if pick.show() == name:
+            if pick.show_card() == name:
                 self.__deck.remove(pick)
                 flag = 1
                 break
@@ -75,7 +90,10 @@ class Deck(object):
             return pick
 
     def make_board(self):
-        '''make a random board'''
+        '''make a random board
+        
+        >>> deck.make_board()
+        '''
         
         board = []
         for i in range(5):
@@ -86,7 +104,10 @@ class Deck(object):
         return board
 
     def make_hand(self):
-        '''make a random hand'''
+        '''make a random hand
+        
+        >>> deck.make_hand()
+        '''
         
         hand = []
         for i in range(2):

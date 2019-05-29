@@ -101,6 +101,6 @@ def test_best_hand(playerhand):
     # return sorted(best_hand('2D 2C 2H 7C 7D KC KS'.split()))
     return sorted(best_hand(playerhand.split()))
 
-# tbh = test_best_hand('AS KS QS QC 8C 2H 3C')
+# tbh = test_best_hand('TS KS QS QC 8C 2H 3C')
 # print(tbh)
 # print(tbh[3])

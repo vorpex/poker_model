@@ -8,29 +8,50 @@ import best5
 class Hand(object):
     '''hand class'''
     
-    def __init__(self, hand):
-        '''hand initialization'''
+    def __init__(self, card0, card1):
+        '''hand initialization
         
-        self.__hand = hand
-        self.__card1 = hand[0]
-        self.__card2 = hand[1]
+        >>> card0 = Card('TS')
+        >>> card1 = Card('8D')
+        >>> hand = Hand(card0, card1)
+        >>> 
+        >>> deck = Deck()
+        >>> h = deck.make_hand()
+        >>> hand = Hand(h[0], h[1])
+        '''
+        
+        self.__card0 = card0
+        self.__card1 = card1
 
     def show_hand(self):
-        '''show hand'''
+        '''show hand
+        
+        >>> hand.show_hand()
+        '''
 
-        return self.__hand
+        return self.__card0, self.__card1
 
     def best_five(self, board):
-        '''best 5 out of 7'''
+        '''best 5 out of 7
+        
+        >>> deck = Deck()
+        >>> board = deck.make_board()
+        >>> hand.best_five(board)
+        '''
 
-        hand_and_board = self.__card1.show_card() + ' ' + self.__card2.show_card() + ' ' + \
-        board.flop1().show_card() + ' ' + board.flop2().show_card() + ' ' + board.flop3().show_card() + ' ' + \
+        hand_and_board = self.__card0.show_card() + ' ' + self.__card1.show_card() + ' ' + \
+        board.flop0().show_card() + ' ' + board.flop1().show_card() + ' ' + board.flop2().show_card() + ' ' + \
         board.turn().show_card() + ' ' + board.river().show_card()
 
         return best5.test_best_hand(hand_and_board)
 
     def hand_strength(self, board):
-        '''hand strength'''
+        '''hand strength
+        
+        >>> deck = Deck()
+        >>> board = deck.make_board()
+        >>> hand.hand_strength(board)        
+        '''
 
         evaluator = deuces.Evaluator()
         b5 = self.best_five(board)

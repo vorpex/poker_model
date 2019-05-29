@@ -6,7 +6,10 @@ class Card(object):
     '''card class'''
     
     def __init__(self, card):
-        '''card initialization'''
+        '''card initialization
+        
+        >>> card = Card('Ts')
+        '''
        
         self.__figure = card[0]
         self.__color = card[1].upper()
@@ -31,21 +34,33 @@ class Card(object):
             self.__value = int(self.__figure)
 
     def show_card(self):
-        '''show card'''
+        '''show card
+        
+        >>> card.show_card()
+        '''
 
         return self.__card
 
     def figure(self):
-        '''show figure'''
+        '''show figure
+        
+        >>> card.figure()
+        '''
 
         return self.__figure
 
     def color(self):
-        '''show color'''
+        '''show color
+        
+        >>> card.color()
+        '''
 
         return self.__color
 
     def value(self):
-        '''show value'''
+        '''show value
+        
+        >>> card.value()
+        '''
 
         return self.__value
