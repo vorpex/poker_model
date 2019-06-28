@@ -2,48 +2,90 @@
 
 # pylint: disable=E1101, E1601
 
-import card as c
-import board as b
-import deck as d
-import hand as h
-import player as pl
-import pot as p
-import table_init as t
+import pcard
+import pboard
+import pdeck
+import phand
+import pplayer
+import ppot
 
-table_init = t.table_init(6, 1000)
-POT = table_init[0]
-PLAYERS = table_init[1]
+# parameters
+
+number_of_players = 6
+starting_chips_amount = 1000
+small_blind_amount = 10
+big_blind_amount = 2 * small_blind_amount
+
+# table initialization
+
+def table_init(nr_of_players, starting_chips):
+    '''players initialization'''
+
+    pot = ppot.Pot()
+
+    players = []
+    for i in range(nr_of_players):
+
+        players.append(pplayer.Player(i, starting_chips))
+        players[i].add_position(i)
+
+    return pot, players
+
+TABLE = table_init(number_of_players, starting_chips_amount)
+POT = TABLE[0]
+PLAYERS = TABLE[1]
 
 # game initialization
 
 for i in range(len(PLAYERS)):
 
-    PLAYERS[i].add_position((PLAYERS[i].position_nr + 1) % len(PLAYERS))
+    PLAYERS[i].add_position((PLAYERS[i].position_nr() + 1) % len(PLAYERS))
 
-deck = d.Deck()
+DECK = pdeck.Deck()
+BOARD = DECK.make_board()
 
-brd = deck.make_board()
-BOARD = b.Board(brd[0], brd[1], brd[2], brd[3], brd[4])
-
-hnd = [deck.make_hand() for i in range(len(PLAYERS))]
-HAND = [h.Hand(hnd[i][0], hnd[i][1]) for i in range(len(PLAYERS))]
+HANDS = [DECK.make_hand() for i in range(len(PLAYERS))]
 for i in range(len(PLAYERS)):
 
-    PLAYERS[i].add_hand(HAND[i])
+    PLAYERS[i].add_hand(HANDS[i])
 
-player_order = []
+PLAYER_ORDER = [0 for i in range(len(PLAYERS))]
 for i in range(len(PLAYERS)):
 
-    player_order[PLAYERS[i].position_nr()] = PLAYERS[i]
+    PLAYER_ORDER[PLAYERS[i].position_nr()] = PLAYERS[i]
 
-player_move = [1 for i in range(len(PLAYERS))]
+PLAYER_MOVE = [1 for i in range(len(PLAYERS))]
 
 # preflop phase
 
-# player_order[0] action: bet small blind
-# player_order[1] action: bet big blind
+def small_blind(player, small_blind_amount, pot):
+    '''small blind move'''
+    
+    if isinstance(player, pplayer.Player) and isinstance(pot, ppot.Pot):
+        player.decrease_chips(small_blind_amount)
+        pot.increase_pot(small_blind_amount)
+        PLAYER_MOVE[0] = 0
+    else:
+        raise TypeError('Wrong type(s)')
+    
+    return None
 
-while sum(player_move) != 0:
+def big_blind(player, big_blind_amount, pot):
+    '''big blind move'''
+    
+    if isinstance(player, pplayer.Player) and isinstance(pot, ppot.Pot):
+        player.decrease_chips(big_blind_amount)
+        pot.increase_pot(big_blind_amount)
+        PLAYER_MOVE[1] = 0
+    else:
+        raise TypeError('Wrong type(s)')
+
+    return None
+
+small_blind(PLAYER_ORDER[0], small_blind_amount, POT)
+big_blind(PLAYER_ORDER[1], big_blind_amount, POT)
+
+while sum(PLAYER_MOVE) != 0:
 
     # for i in range(len(player_move)):
     #

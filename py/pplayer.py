@@ -8,7 +8,9 @@ class Player(object):
     def __init__(self, nr, chips):
         '''player initialization
         
-        >>> player = Player(2, 100)
+        >>> import pplayer
+        >>>
+        >>> PLAYER = pplayer.Player(2, 100)
         '''
         
         self.__number = nr
@@ -21,7 +23,10 @@ class Player(object):
     def number(self):
         '''show player number
         
-        >>> player.number()
+        >>> import pplayer
+        >>>
+        >>> PLAYER = pplayer.Player(2, 100)
+        >>> PLAYER.number()
         '''
 
         return self.__number
@@ -29,7 +34,10 @@ class Player(object):
     def general_name(self):
         '''general name
         
-        >>> player.general_name()
+        >>> import pplayer
+        >>>
+        >>> PLAYER = pplayer.Player(2, 100)
+        >>> PLAYER.general_name()
         '''
 
         return self.__general_name
@@ -37,7 +45,10 @@ class Player(object):
     def show_player_hand(self):
         '''show hand
         
-        >>> player.show_player_hand()
+        >>> import pplayer
+        >>>
+        >>> PLAYER = pplayer.Player(2, 100)
+        >>> PLAYER.show_player_hand()
         '''
 
         return self.__hand
@@ -45,9 +56,14 @@ class Player(object):
     def add_hand(self, hand):
         '''adding hand to player:
         
-        >>> card0 = Card('TS')
-        >>> card1 = Card('8D')
-        >>> player.add_hand(Hand(card0, card1))
+        >>> import pdeck
+        >>> import pplayer
+        >>>
+        >>> DECK = pdeck.Deck()
+        >>> BOARD = DECK.make_board()
+        >>> HAND = DECK.make_hand()
+        >>> PLAYER = pplayer.Player(2, 100)
+        >>> player.add_hand(HAND)
         '''
         
         self.__hand = hand
@@ -55,7 +71,10 @@ class Player(object):
     def chips(self):
         '''show chips
         
-        >>> player.chips()
+        >>> import pplayer
+        >>>
+        >>> PLAYER = pplayer.Player(2, 100)
+        >>> PLAYER.chips()
         '''
 
         return self.__chips
@@ -63,7 +82,10 @@ class Player(object):
     def increase_chips(self, won_chips):
         '''winning money
         
-        >>> player.increase_chips(50)
+        >>> import pplayer
+        >>>
+        >>> PLAYER = pplayer.Player(2, 100)
+        >>> PLAYER.increase_chips(50)
         '''
         
         self.__chips = self.__chips + won_chips
@@ -71,7 +93,10 @@ class Player(object):
     def decrease_chips(self, lost_chips):
         '''losing money
         
-        >>> player.decrease_chips(50)
+        >>> import pplayer
+        >>>
+        >>> PLAYER = pplayer.Player(2, 100)
+        >>> PLAYER.decrease_chips(50)
         '''
 
         self.__chips = self.__chips - lost_chips
@@ -79,7 +104,10 @@ class Player(object):
     def position_nr(self):
         '''show position number
         
-        >>> player.position_nr()
+        >>> import pplayer
+        >>>
+        >>> PLAYER = pplayer.Player(2, 100)
+        >>> PLAYER.position_nr()
         '''
 
         return self.__position_nr
@@ -87,7 +115,10 @@ class Player(object):
     def position_name(self):
         '''show position name
         
-        >>> player.position_name()
+        >>> import pplayer
+        >>>
+        >>> PLAYER = pplayer.Player(2, 100)
+        >>> PLAYER.position_name()
         '''
 
         return self.__position_name
@@ -95,7 +126,10 @@ class Player(object):
     def add_position(self, position_nr):
         '''adding position
         
-        >>> player.add_position(5)
+        >>> import pplayer
+        >>>
+        >>> PLAYER = pplayer.Player(2, 100)
+        >>> PLAYER.add_position(5)
         '''
 
         if position_nr >= 0 and position_nr <= 5:
@@ -103,22 +137,15 @@ class Player(object):
             
             if self.__position_nr == 0:
                 self.__position_name = 'Small Blind'
-            
             elif self.__position_nr == 1:
                 self.__position_name = 'Big Blind'
-            
             elif self.__position_nr == 2:
                 self.__position_name = 'Under the Gun'
-            
             elif self.__position_nr == 3:
                 self.__position_name = 'Middle'
-            
             elif self.__position_nr == 4:
                 self.__position_name = 'Tail'
-            
             else:
                 self.__position_name = 'Dealer'
-        
         else:
-            print('Position nr is too big or too little')
-            pass
+            raise AttributeError('Position nr is too big or too little')

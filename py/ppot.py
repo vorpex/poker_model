@@ -8,7 +8,9 @@ class Pot(object):
     def __init__(self):
         '''pot initialization
         
-        >>> pot = Pot()
+        >>> import ppot
+        >>>
+        >>> POT = ppot.Pot()
         '''
         
         self.__pot = 0
@@ -16,7 +18,10 @@ class Pot(object):
     def show_pot(self):
         '''show pot
         
-        >>> pot.show()
+        >>> import ppot
+        >>>
+        >>> POT = ppot.Pot()
+        >>> POT.show()
         '''
 
         return self.__pot
@@ -24,8 +29,12 @@ class Pot(object):
     def increase_pot(self, chips):
         '''increase pot
         
-        >>> pot.increase_pot(50)
+        >>> import ppot
+        >>>
+        >>> POT = ppot.Pot()
+        >>> POT.increase_pot(50)
         '''
 
         self.__pot = self.__pot + chips
+        
         return self.__pot

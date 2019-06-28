@@ -3,7 +3,7 @@
 # pylint: disable=E1601
 
 import deuces
-import best5
+import bestfive
 
 class Hand(object):
     '''hand class'''
@@ -11,13 +11,16 @@ class Hand(object):
     def __init__(self, card0, card1):
         '''hand initialization
         
-        >>> card0 = Card('TS')
-        >>> card1 = Card('8D')
-        >>> hand = Hand(card0, card1)
+        >>> import pcard
+        >>> import pdeck
+        >>> import phand
+        >>>
+        >>> card0 = pcard.Card('TS')
+        >>> card1 = pcard.Card('8D')
+        >>> HAND = phand.Hand(card0, card1)
         >>> 
-        >>> deck = Deck()
-        >>> h = deck.make_hand()
-        >>> hand = Hand(h[0], h[1])
+        >>> DECK = pdeck.Deck()
+        >>> HAND = DECK.make_hand()
         '''
         
         self.__card0 = card0
@@ -26,31 +29,41 @@ class Hand(object):
     def show_hand(self):
         '''show hand
         
-        >>> hand.show_hand()
+        >>> import pdeck
+        >>>
+        >>> DECK = pdeck.Deck()
+        >>> HAND = DECK.make_hand()
+        >>> HAND.show_hand()
         '''
 
         return self.__card0, self.__card1
 
     def best_five(self, board):
         '''best 5 out of 7
-        
-        >>> deck = Deck()
-        >>> board = deck.make_board()
-        >>> hand.best_five(board)
+
+        >>> import pdeck
+        >>>
+        >>> DECK = pdeck.Deck()
+        >>> BOARD = DECK.make_board()
+        >>> HAND = DECK.make_hand()
+        >>> HAND.best_five(BOARD)
         '''
 
         hand_and_board = self.__card0.show_card() + ' ' + self.__card1.show_card() + ' ' + \
         board.flop0().show_card() + ' ' + board.flop1().show_card() + ' ' + board.flop2().show_card() + ' ' + \
         board.turn().show_card() + ' ' + board.river().show_card()
 
-        return best5.test_best_hand(hand_and_board)
+        return bestfive.test_best_hand(hand_and_board)
 
     def hand_strength(self, board):
         '''hand strength
-        
-        >>> deck = Deck()
-        >>> board = deck.make_board()
-        >>> hand.hand_strength(board)        
+
+        >>> import deck
+        >>>
+        >>> DECK = deck.Deck()
+        >>> BOARD = DECK.make_board()
+        >>> HAND = DECK.make_hand()
+        >>> HAND.hand_strength(BOARD)
         '''
 
         evaluator = deuces.Evaluator()
@@ -64,5 +77,5 @@ class Hand(object):
         hl = [deuces.Card.new(h1), deuces.Card.new(h2)]
         bl = [deuces.Card.new(b1), deuces.Card.new(b2), deuces.Card.new(b3)]
         strength = evaluator.evaluate(bl, hl)
-
+        
         return strength
