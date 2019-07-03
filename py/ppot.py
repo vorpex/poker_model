@@ -1,6 +1,6 @@
 '''pot class'''
 
-# pylint: disable=E1601
+# pylint: disable=E1101, E1601, W0612
 
 class Pot(object):
     '''pot class'''

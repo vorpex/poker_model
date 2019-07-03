@@ -1,6 +1,9 @@
 '''deck class'''
 
-# pylint: disable=E1601, W0612
+# pylint: disable=E1101, E1601, W0612
+
+import sys
+sys.path.append('c:\\ProgramData\\Anaconda3\\Lib\\site-packages\\deuces\\')
 
 import pboard
 import pcard

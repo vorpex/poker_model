@@ -1,6 +1,9 @@
 '''poker test'''
 
-# pylint: disable=E1101, E1601
+# pylint: disable=E1101, E1601, W0612
+
+import sys
+sys.path.append('c:\\ProgramData\\Anaconda3\\Lib\\site-packages\\deuces\\')
 
 import pcard
 import pboard
@@ -9,29 +12,21 @@ import phand
 import pplayer
 import ppot
 
+import check_moves
+import db_funcs
+import moves
+
 # parameters
 
+game_id = 1
 number_of_players = 6
 starting_chips_amount = 1000
-small_blind_amount = 10
-big_blind_amount = 2 * small_blind_amount
+small_blind = 10
+big_blind = 2 * small_blind
 
 # table initialization
 
-def table_init(nr_of_players, starting_chips):
-    '''players initialization'''
-
-    pot = ppot.Pot()
-
-    players = []
-    for i in range(nr_of_players):
-
-        players.append(pplayer.Player(i, starting_chips))
-        players[i].add_position(i)
-
-    return pot, players
-
-TABLE = table_init(number_of_players, starting_chips_amount)
+TABLE = db_funcs.table_init(number_of_players, starting_chips_amount)
 POT = TABLE[0]
 PLAYERS = TABLE[1]
 
@@ -54,48 +49,111 @@ for i in range(len(PLAYERS)):
 
     PLAYER_ORDER[PLAYERS[i].position_nr()] = PLAYERS[i]
 
-PLAYER_MOVE = [1 for i in range(len(PLAYERS))]
+PLAYER_MOVE_FLAGS = [1 for i in range(len(PLAYERS))]
 
 # preflop phase
 
-def small_blind(player, small_blind_amount, pot):
-    '''small blind move'''
-    
-    if isinstance(player, pplayer.Player) and isinstance(pot, ppot.Pot):
-        player.decrease_chips(small_blind_amount)
-        pot.increase_pot(small_blind_amount)
-        PLAYER_MOVE[0] = 0
+db_funcs.create_decision_point(
+    PLAYER_ORDER[i], \
+    PLAYER_ORDER[i].show_player_hand().show_hand()[0].show_card(), \
+    PLAYER_ORDER[i].show_player_hand().show_hand()[1].show_card(), \
+    PLAYER_ORDER[i].chips(), \
+    PLAYER_ORDER[i].position_nr(), \
+    POT.show_pot()
+)
+moves.small_blind_move(PLAYER_ORDER[0], small_blind, POT)
+
+db_funcs.create_decision_point(
+    PLAYER_ORDER[i], \
+    PLAYER_ORDER[i].show_player_hand().show_hand()[0].show_card(), \
+    PLAYER_ORDER[i].show_player_hand().show_hand()[1].show_card(), \
+    PLAYER_ORDER[i].chips(), \
+    PLAYER_ORDER[i].position_nr(), \
+    POT.show_pot()
+)
+moves.big_blind_move(PLAYER_ORDER[1], big_blind, POT)
+
+for i in range(2, 6):
+
+    db_funcs.create_decision_point(
+    PLAYER_ORDER[i], \
+    PLAYER_ORDER[i].show_player_hand().show_hand()[0].show_card(), \
+    PLAYER_ORDER[i].show_player_hand().show_hand()[1].show_card(), \
+    PLAYER_ORDER[i].chips(), \
+    PLAYER_ORDER[i].position_nr(), \
+    POT.show_pot()
+    )
+
+    if PLAYER_MOVE_FLAGS[i] == 1:
+        pmf = db_funcs.check_possible_moves(
+                PLAYER_ORDER[i], \
+                PLAYER_ORDER[i].show_player_hand().show_hand()[0].show_card(), \
+                PLAYER_ORDER[i].show_player_hand().show_hand()[1].show_card(), \
+                PLAYER_ORDER[i].chips(), \
+                PLAYER_ORDER[i].position_nr(), \
+                POT.show_pot()
+            )
+
+        if pmf == 0:
+            db_funcs.create_possible_moves(
+                PLAYER_ORDER[i], \
+                PLAYER_ORDER[i].show_player_hand().show_hand()[0].show_card(), \
+                PLAYER_ORDER[i].show_player_hand().show_hand()[1].show_card(), \
+                PLAYER_ORDER[i].chips(), \
+                PLAYER_ORDER[i].position_nr(), \
+                POT.show_pot()
+            )
+        else:
+            db_funcs.call_possible_move(
+                PLAYER_ORDER[i], \
+                PLAYER_MOVE_FLAGS, \
+                PLAYER_ORDER[i].chips(), \
+                POT.show_pot()
+            )
     else:
-        raise TypeError('Wrong type(s)')
-    
-    return None
+        pass
 
-def big_blind(player, big_blind_amount, pot):
-    '''big blind move'''
-    
-    if isinstance(player, pplayer.Player) and isinstance(pot, ppot.Pot):
-        player.decrease_chips(big_blind_amount)
-        pot.increase_pot(big_blind_amount)
-        PLAYER_MOVE[1] = 0
-    else:
-        raise TypeError('Wrong type(s)')
+while sum(PLAYER_MOVE_FLAGS) != 0: # extend with other conditions
 
-    return None
+    for i in range(6):
 
-small_blind(PLAYER_ORDER[0], small_blind_amount, POT)
-big_blind(PLAYER_ORDER[1], big_blind_amount, POT)
+        db_funcs.create_decision_point(
+            PLAYER_ORDER[i], \
+            PLAYER_ORDER[i].show_player_hand().show_hand()[0].show_card(), \
+            PLAYER_ORDER[i].show_player_hand().show_hand()[1].show_card(), \
+            PLAYER_ORDER[i].chips(), \
+            PLAYER_ORDER[i].position_nr(), \
+            POT.show_pot()
+        )
 
-while sum(PLAYER_MOVE) != 0:
+        if PLAYER_MOVE_FLAGS[i] == 1:
+            pmf = db_funcs.check_possible_moves(
+                    PLAYER_ORDER[i], \
+                    PLAYER_ORDER[i].show_player_hand().show_hand()[0].show_card(), \
+                    PLAYER_ORDER[i].show_player_hand().show_hand()[1].show_card(), \
+                    PLAYER_ORDER[i].chips(), \
+                    PLAYER_ORDER[i].position_nr(), \
+                    POT.show_pot()
+                )
 
-    # for i in range(len(player_move)):
-    #
-    #     if player_move[i] == 1:
-    #         check_valid_move_from_db(parameters)
-    #         choose_valid_move_from_db(parameters)
-    #         do valid move
-    #         player_move[i] = 0
-
-    pass
+            if pmf == 0:
+                db_funcs.create_possible_moves(
+                    PLAYER_ORDER[i], \
+                    PLAYER_ORDER[i].show_player_hand().show_hand()[0].show_card(), \
+                    PLAYER_ORDER[i].show_player_hand().show_hand()[1].show_card(), \
+                    PLAYER_ORDER[i].chips(), \
+                    PLAYER_ORDER[i].position_nr(), \
+                    POT.show_pot()
+                )
+            else:
+                db_funcs.call_possible_move(
+                    PLAYER_ORDER[i], \
+                    PLAYER_MOVE_FLAGS, \
+                    PLAYER_ORDER[i].chips(), \
+                    POT.show_pot()
+                )
+        else:
+            pass
 
 # flop phase
 
