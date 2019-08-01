@@ -99,7 +99,7 @@ def descision_point(hand, stack, pot, position=2, phase=0, nr=2):
 
     poker_cursor.execute(
         'SELECT\n' +\
-        '  t.id\n' +\
+        '  NVL(t.id, -1) AS id\n' +\
         '\n' +\
         'FROM\n' +\
         '  poker.decision_points t\n' +\
