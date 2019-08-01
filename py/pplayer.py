@@ -65,8 +65,8 @@ class Player(object):
         '''
 
         try:
-            hand = str(self.hand.show_hand()[0].figure()) + '-' + str(self.hand.show_hand()[1].figure())
-            if self.hand.show_hand()[0].color() == self.hand.show_hand()[1].color():
+            hand = str(self.__hand.show_hand()[0].figure()) + '-' + str(self.__hand.show_hand()[1].figure())
+            if self.__hand.show_hand()[0].color() == self.__hand.show_hand()[1].color():
                 hand = hand + '-s'
             else:
                 hand = hand + '-o'
