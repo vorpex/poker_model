@@ -16,6 +16,8 @@ big_blind = 2 * small_blind
 
 db_funcs.sql_delete_all(table='games')
 db_funcs.sql_delete_all(table='history')
+db_funcs.sql_delete_all(table='decision_points')
+db_funcs.sql_delete_all(table='possible_moves')
 db_funcs.sql_insert_games(values_list=[number_of_players, starting_stack, small_blind, big_blind])
 
 # TABLE INITIALIZATION
@@ -60,9 +62,30 @@ db_moves.big_blind_move(player=PLAYER_ORDER[1], pot=POT, amount=big_blind)
 phase = 0
 nr = 2
 for i in range(2, 6):
-
-    db_funcs.decision_point(hand=PLAYER_ORDER[i].show_player_hand_db(), stack=PLAYER_ORDER[i].stack(), \
+    
+    move = db_funcs.decision_point(hand=PLAYER_ORDER[i].show_player_hand_db(), stack=PLAYER_ORDER[i].stack(), \
         pot=POT.show_pot(), position=PLAYER_ORDER[i].position_nr(), phase=phase, nr=nr)
+    if move == 'fold':
+        db_moves.fold_move(player=PLAYER_ORDER[i], pot=POT, phase=phase, nr=nr)
+    elif move == 'check':
+        db_moves.check_move(player=PLAYER_ORDER[i], pot=POT, phase=phase, nr=nr)
+    elif move == 'call':
+        call_amount = 60 # calculation for call_amount
+        db_moves.call_move(player=PLAYER_ORDER[i], pot=POT, phase=phase, nr=nr, amount=call_amount)
+    elif move == 'bet':
+        bet_amount = 60 # calculation for bet_amount
+        db_moves.bet_move(player=PLAYER_ORDER[i], pot=POT, phase=phase, nr=nr, amount=bet_amount)
+    elif move == 'raise':
+        raise_amount = 60 # calculation for bet_amount
+        db_moves.raise_move(player=PLAYER_ORDER[i], pot=POT, phase=phase, nr=nr, amount=raise_amount)
+    elif move == 'allin':
+        db_moves.allin_move(player=PLAYER_ORDER[i], pot=POT, phase=phase, nr=nr, amount=PLAYER_ORDER[i].stack())
+    else:
+        pass
+    
+    # save move information for every players
+
+    nr = nr + 1
 
 # while sum(PLAYER_MOVE_FLAGS) != 0: # extend with other conditions
 
