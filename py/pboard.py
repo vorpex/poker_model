@@ -2,6 +2,8 @@
 
 # pylint: disable=E1101, E1601, W0612
 
+import pcard
+
 class Board(object):
     '''board class'''
 
@@ -23,11 +25,15 @@ class Board(object):
         >>> BOARD = DECK.make_board()
         '''
 
-        self.__flop0 = card0
-        self.__flop1 = card1
-        self.__flop2 = card2
-        self.__turn = card3
-        self.__river = card4
+        if isinstance(card0, pcard.Card) and isinstance(card1, pcard.Card) and isinstance(card2, pcard.Card) and \
+        isinstance(card3, pcard.Card) and isinstance(card4, pcard.Card):
+            self.__flop0 = card0
+            self.__flop1 = card1
+            self.__flop2 = card2
+            self.__turn = card3
+            self.__river = card4
+        else:
+            raise TypeError('Wrong type')
 
     def show_board(self):
         '''show board

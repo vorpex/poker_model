@@ -2,10 +2,12 @@
 
 # pylint: disable=E1101, E1601, W0612
 
+import phand
+
 class Player(object):
     '''player class'''
 
-    def __init__(self, nr, chips):
+    def __init__(self, nr, stack):
         '''player initialization
         
         >>> import pplayer
@@ -15,8 +17,8 @@ class Player(object):
         
         self.__number = nr
         self.__general_name = 'player' + str(nr)
-        self.__chips = chips
-        self.__hand = []
+        self.__stack = stack
+        self.__hand = None
         self.__position_nr = 0
         self.__position_name = 'None'
     
@@ -52,6 +54,26 @@ class Player(object):
         '''
 
         return self.__hand
+    
+    def show_player_hand_db(self):
+        '''show hand in db format
+        
+        >>> import pplayer
+        >>>
+        >>> PLAYER = pplayer.Player(2, 100)
+        >>> PLAYER.show_player_hand_db()
+        '''
+
+        try:
+            hand = str(self.hand.show_hand()[0].figure()) + '-' + str(self.hand.show_hand()[1].figure())
+            if self.hand.show_hand()[0].color() == self.hand.show_hand()[1].color():
+                hand = hand + '-s'
+            else:
+                hand = hand + '-o'
+
+            return hand
+        except:
+            return self.__hand
 
     def add_hand(self, hand):
         '''adding hand to player:
@@ -66,40 +88,43 @@ class Player(object):
         >>> player.add_hand(HAND)
         '''
         
-        self.__hand = hand
+        if isinstance(hand, phand.Hand):
+            self.__hand = hand
+        else:
+            raise TypeError('Wrong type')
 
-    def chips(self):
-        '''show chips
+    def stack(self):
+        '''show stack
         
         >>> import pplayer
         >>>
         >>> PLAYER = pplayer.Player(2, 100)
-        >>> PLAYER.chips()
+        >>> PLAYER.stack()
         '''
 
-        return self.__chips
+        return self.__stack
 
-    def increase_chips(self, won_chips):
+    def increase_stack(self, won_chips):
         '''winning money
         
         >>> import pplayer
         >>>
         >>> PLAYER = pplayer.Player(2, 100)
-        >>> PLAYER.increase_chips(50)
+        >>> PLAYER.increase_stack(50)
         '''
         
-        self.__chips = self.__chips + won_chips
+        self.__stack = self.__stack + won_chips
 
-    def decrease_chips(self, lost_chips):
+    def decrease_stack(self, lost_chips):
         '''losing money
         
         >>> import pplayer
         >>>
         >>> PLAYER = pplayer.Player(2, 100)
-        >>> PLAYER.decrease_chips(50)
+        >>> PLAYER.decrease_stack(50)
         '''
 
-        self.__chips = self.__chips - lost_chips
+        self.__stack = self.__stack - lost_chips
 
     def position_nr(self):
         '''show position number

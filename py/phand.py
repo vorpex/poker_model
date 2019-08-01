@@ -8,6 +8,8 @@ sys.path.append('c:\\ProgramData\\Anaconda3\\Lib\\site-packages\\deuces\\')
 import deuces
 import bestfive
 
+import pcard
+
 class Hand(object):
     '''hand class'''
     
@@ -25,9 +27,11 @@ class Hand(object):
         >>> DECK = pdeck.Deck()
         >>> HAND = DECK.make_hand()
         '''
-        
-        self.__card0 = card0
-        self.__card1 = card1
+        if isinstance(card0, pcard.Card) and isinstance(card1, pcard.Card):
+            self.__card0 = card0
+            self.__card1 = card1
+        else:
+            raise TypeError('Wrong type')
 
     def show_hand(self):
         '''show hand
