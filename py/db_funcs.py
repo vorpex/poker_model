@@ -190,17 +190,36 @@ def decision_point(hand, stack, pot, position=2, phase=0, nr=2):
         '  AND d.history in (\n' +\
         '\n' +\
         '  SELECT\n' +\
-        '    GROUP_CONCAT(h.phase, \'-\', h.nr, \'-\', h.position, \'-\', h.stack, \'-\', h.pot, \'-\', ' +\
-        'h.flop1, \'-\', h.flop2, \'-\', h.flop3, \'-\', h.turn, \'-\', h.river, \'-\', h.move, \'-\', ' +\
-        'h.amount) AS history\n' +\
+        '    REPLACE(REPLACE(REPLACE(\n' +\
+        '      concat(\'{\',\n' +\
+        '      GROUP_CONCAT(s.jobj SEPARATOR \',\\' + 'n' + '\'),\n' +\
+        '      \'}\'), \'[\"\', \'[\'), \'\"]\', \']\'), \'\\\\\', \'\') as jobj\n' +\
         '\n' +\
-        '  FROM\n' +\
-        '    poker.history h\n' +\
-        '\n' +\
-        '  WHERE\n' +\
-        '    1 = 1\n' +\
-        '    AND h.game_id = ' + str(max_id[0][0]) + '\n' +\
-        '    AND h.nr < ' + str(nr) + '\n' +\
+        '  FROM (\n' +\
+        '    SELECT concat(\'\"phase\":\', json_array(GROUP_CONCAT(h.phase))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+        '    UNION\n' +\
+        '    SELECT concat(\'\"nr\":\', json_array(GROUP_CONCAT(h.nr))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+        '    UNION\n' +\
+        '    SELECT concat(\'\"position\":\', json_array(GROUP_CONCAT(h.position))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+        '    UNION\n' +\
+        '    SELECT concat(\'\"stack\":\', json_array(GROUP_CONCAT(h.stack))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+        '    UNION\n' +\
+        '    SELECT concat(\'\"pot\":\', json_array(GROUP_CONCAT(h.pot))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+        '    UNION\n' +\
+        '    SELECT concat(\'\"flop1\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.flop1, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+        '    UNION\n' +\
+        '    SELECT concat(\'\"flop2\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.flop2, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+        '    UNION\n' +\
+        '    SELECT concat(\'\"flop3\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.flop3, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+        '    UNION\n' +\
+        '    SELECT concat(\'\"turn\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.turn, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+        '    UNION\n' +\
+        '    SELECT concat(\'\"river\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.river, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+        '    UNION\n' +\
+        '    SELECT concat(\'\"move\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.move, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+        '    UNION\n' +\
+        '    SELECT concat(\'\"amount\":\', json_array(GROUP_CONCAT(h.amount))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+        '  ) s\n' +\
         '\n' +\
         ')'
     )
@@ -237,17 +256,36 @@ def decision_point(hand, stack, pot, position=2, phase=0, nr=2):
     else:
         poker_cursor.execute(
             'SELECT\n' +\
-            '  GROUP_CONCAT(h.phase, \'-\', h.nr, \'-\', h.position, \'-\', h.stack, \'-\', h.pot, \'-\', ' +\
-            'h.flop1, \'-\', h.flop2, \'-\', h.flop3, \'-\', h.turn, \'-\', h.river, \'-\', h.move, \'-\', ' +\
-            'h.amount) AS history\n' +\
+            '  REPLACE(REPLACE(REPLACE(\n' +\
+            '    concat(\'{\',\n' +\
+            '    GROUP_CONCAT(s.jobj SEPARATOR \',\\' + 'n' + '\'),\n' +\
+            '    \'}\'), \'[\"\', \'[\'), \'\"]\', \']\'), \'\\\\\', \'\') as jobj\n' +\
             '\n' +\
-            'FROM\n' +\
-            '  poker.history h\n' +\
-            '\n' +\
-            'WHERE\n' +\
-            '  1 = 1\n' +\
-            '  AND h.game_id = ' + str(max_id[0][0]) + '\n' +\
-            '  AND h.nr < ' + str(nr)
+            'FROM (\n' +\
+            '  SELECT concat(\'\"phase\":\', json_array(GROUP_CONCAT(h.phase))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+            '  UNION\n' +\
+            '  SELECT concat(\'\"nr\":\', json_array(GROUP_CONCAT(h.nr))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+            '  UNION\n' +\
+            '  SELECT concat(\'\"position\":\', json_array(GROUP_CONCAT(h.position))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+            '  UNION\n' +\
+            '  SELECT concat(\'\"stack\":\', json_array(GROUP_CONCAT(h.stack))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+            '  UNION\n' +\
+            '  SELECT concat(\'\"pot\":\', json_array(GROUP_CONCAT(h.pot))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+            '  UNION\n' +\
+            '  SELECT concat(\'\"flop1\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.flop1, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+            '  UNION\n' +\
+            '  SELECT concat(\'\"flop2\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.flop2, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+            '  UNION\n' +\
+            '  SELECT concat(\'\"flop3\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.flop3, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+            '  UNION\n' +\
+            '  SELECT concat(\'\"turn\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.turn, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+            '  UNION\n' +\
+            '  SELECT concat(\'\"river\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.river, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+            '  UNION\n' +\
+            '  SELECT concat(\'\"move\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.move, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+            '  UNION\n' +\
+            '  SELECT concat(\'\"amount\":\', json_array(GROUP_CONCAT(h.amount))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
+            ') s'
         )
         history = poker_cursor.fetchall()
         
