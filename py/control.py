@@ -79,17 +79,11 @@ phase = 0
 nr = 2
 for i in range(2, 6):
     
-    move = funcs_db.decision_point(poker_db=poker_db, hand=PLAYERS_ORDERED[i].player_hand_simple(), \
+    move, amount = funcs_db.decision_point(poker_db=poker_db, hand=PLAYERS_ORDERED[i].player_hand_simple(), \
         stack=PLAYERS_ORDERED[i].stack(), pot=POT.show_pot(), position=PLAYERS_ORDERED[i].position_nr(), \
         phase=phase, nr=nr)
-    if move in ['fold', 'check']:
-        funcs_poker.move(poker_db=poker_db, player=PLAYERS_ORDERED[i], pot=POT, move=move, phase=phase, nr=nr)
-    elif move in ['call', 'raise']:
-        amount = 60 # calculation for call_amount
-        funcs_poker.move(poker_db=poker_db, player=PLAYERS_ORDERED[i], pot=POT, move=move, phase=phase, nr=nr, \
-            amount=amount)
-    else:
-        pass
+    funcs_poker.move(poker_db=poker_db, player=PLAYERS_ORDERED[i], pot=POT, move=move, phase=phase, nr=nr, \
+        amount=amount)
     
     # save move information for every players
 

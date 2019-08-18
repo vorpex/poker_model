@@ -137,6 +137,12 @@ def sql_insert_possible_moves(poker_db, move, amount, total_profit=1, played_cou
     poker_result = poker_cursor.fetchall()
 
     DECISION_POINT_ID = poker_result[0][0]
+    select_sql_file = open(sql_path + 'possible_moves_max_id.sql').read()
+    select_sql = eval(f'f"""{select_sql_file}"""')
+    poker_cursor.execute(select_sql)
+    poker_result = poker_cursor.fetchall()
+
+    ID = poker_result[0][0] + 1
     insert_sql_file = open(sql_path + 'insert_possible_moves.sql').read()
     insert_sql = eval(f'f"""{insert_sql_file}"""')
     poker_cursor.execute(insert_sql)
@@ -180,18 +186,22 @@ def decision_point(poker_db, hand, stack, pot, position=2, phase=0, nr=2):
         possible_moves_list = poker_cursor.fetchall()
         possible_moves_list = [[*elem] for elem in zip(*possible_moves_list)]
 
-        MOVES = possible_moves_list[0]
-        EV = possible_moves_list[1]
+        ID = possible_moves_list[0]
+        MOVES = possible_moves_list[1]
+        AMOUNT = possible_moves_list[2]
+        EV = possible_moves_list[3]
         if min(EV) <= 0:
             EV = [elem + abs(min(EV)) + 1 for elem in EV]
         else:
             pass
         EV = [elem / sum(EV) for elem in EV]
-        final_move = np.random.choice(MOVES, p=EV)
+        final_move_id = np.random.choice(ID, p=EV)
+        final_move = MOVES[final_move_id]
+        final_move_amount = AMOUNT[final_move_id]
 
         # poker_db.close()
 
-        return final_move
+        return final_move, final_move_amount
     else:
         select_sql_file = open(sql_path + 'select_decision_points_history.sql').read()
         select_sql = eval(f'f"""{select_sql_file}"""')
@@ -214,7 +224,7 @@ def decision_point(poker_db, hand, stack, pot, position=2, phase=0, nr=2):
             if move in ['fold', 'check']:
                 amount = 0
             else:
-                amount = 5
+                amount = 50
             sql_insert_possible_moves(poker_db=poker_db, move=move, amount=amount)
 
         # poker_db.close()

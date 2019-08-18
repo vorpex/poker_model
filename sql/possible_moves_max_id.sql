@@ -1,8 +1,5 @@
 SELECT
-  p.id,
-  p.move,
-  p.amount,
-  p.expected_value
+  NVL(MAX(p.id), -1) AS max_id
 
 FROM
   poker.possible_moves p

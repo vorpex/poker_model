@@ -5,6 +5,7 @@ INTO
 
 VALUES (
   {DECISION_POINT_ID},
+  {ID},
   '{MOVE}',
   {AMOUNT},
   {TOTAL_PROFIT},
