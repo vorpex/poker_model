@@ -71,8 +71,8 @@ class Hand(object):
         '''
 
         hand_and_board = self.__card0.show_card() + ' ' + self.__card1.show_card() + ' ' + \
-        board.flop0().show_card() + ' ' + board.flop1().show_card() + ' ' + board.flop2().show_card() + ' ' + \
-        board.turn().show_card() + ' ' + board.river().show_card()
+            board.flop0().show_card() + ' ' + board.flop1().show_card() + ' ' + board.flop2().show_card() + ' ' + \
+            board.turn().show_card() + ' ' + board.river().show_card()
 
         return bestfive.test_best_hand(hand_and_board)
 

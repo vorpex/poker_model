@@ -34,14 +34,15 @@ def table_init(number_of_players, player0_stack, player1_stack, player2_stack, p
 
     return pot, players
 
-def move(poker_db, player, move, pot, phase=0, nr=0, flop1='none', flop2='none', flop3='none', turn='none', river='none', \
-        amount=0):
+def move(poker_db, player, pot, move, phase=0, nr=0, flop1='none', flop2='none', flop3='none', turn='none', \
+    river='none', amount=0):
     '''move'''
 
     if isinstance(player, pplayer.Player) and isinstance(pot, ppot.Pot):
-        funcs_db.sql_insert_history(poker_db=poker_db, values_list=[phase, nr, player.general_name(), player.position_nr(), player.stack(), \
-            pot.show_pot(), flop1, flop2, flop3, turn, river, move, amount, player.stack() - amount, \
-            pot.show_pot() + amount])
+        funcs_db.sql_insert_history(poker_db=poker_db, phase=phase, nr=nr, player_name=player.general_name(), \
+            position=player.position_nr(), stack=player.stack(), pot=pot.show_pot(), \
+            flop1=flop1, flop2=flop2, flop3=flop3, turn=turn, river=river, move=move, \
+            amount=amount, new_stack=player.stack() - amount, new_pot=pot.show_pot() + amount)
         player.decrease_stack(amount)
         pot.increase_pot(amount)
     else:
@@ -54,18 +55,10 @@ def check_moves(last_move):
 
     if last_move is None:
         moves = ['check', 'raise']
-    elif last_move == 'small_blind':
+    elif last_move in ['small_blind', 'big_blind', 'fold', 'call', 'raise']:
         moves = ['fold', 'call', 'raise']
-    elif last_move == 'big_blind':
-        moves = ['fold', 'call', 'raise']
-    elif last_move == 'fold':
-        moves = ['call', 'raise']
     elif last_move == 'check':
         moves = ['check', 'raise']
-    elif last_move == 'call':
-        moves = ['fold', 'call', 'raise']
-    elif last_move == 'raise':
-        moves = ['fold', 'call', 'raise']
     else:
         pass
 

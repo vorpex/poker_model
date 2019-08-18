@@ -15,11 +15,11 @@ def sql_delete_all(poker_db, table):
     '''delete all rows from table'''
 
     TABLE = table
-    delete_sql_file = open(sql_path + 'delete_all.sql').read()
-    delete_sql = eval(f'f"""{delete_sql_file}"""')
 
     # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
     poker_cursor = poker_db.cursor()
+    delete_sql_file = open(sql_path + 'delete_all.sql').read()
+    delete_sql = eval(f'f"""{delete_sql_file}"""')
     poker_cursor.execute(delete_sql)
     poker_cursor.execute('COMMIT')
     # poker_db.close()
@@ -39,181 +39,144 @@ def sql_insert_games(poker_db, number_of_players, player0_stack, player1_stack, 
     PLAYER5_STACK = player5_stack
     SMALL_BLIND = small_blind
     BIG_BLIND = big_blind
-    games_max_id_sql_file = open(sql_path + 'games_max_id.sql').read()
-    games_max_id_sql = eval(f'f"""{games_max_id_sql_file}"""')
 
     # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
     poker_cursor = poker_db.cursor()
-    poker_cursor.execute(games_max_id_sql)
+    select_sql_file = open(sql_path + 'games_max_id.sql').read()
+    select_sql = eval(f'f"""{select_sql_file}"""')
+    poker_cursor.execute(select_sql)
     poker_result = poker_cursor.fetchall()
     
     ID = poker_result[0][0] + 1
     insert_sql_file = open(sql_path + 'insert_games.sql').read()
     insert_sql = eval(f'f"""{insert_sql_file}"""')
-    
     poker_cursor.execute(insert_sql)
     poker_cursor.execute('COMMIT')
-
     # poker_db.close()
 
     return None
 
-def sql_insert_history(values_list, poker_db):
+def sql_insert_history(poker_db, phase, nr, player_name, position, stack, pot, flop1, flop2, flop3, turn, \
+    river, move, amount, new_stack, new_pot):
     '''insert row into history table'''
 
+    PHASE = phase
+    NR = nr
+    PLAYER_NAME = player_name
+    POSITION = position
+    STACK = stack
+    POT = pot
+    FLOP1 = flop1
+    FLOP2 = flop2
+    FLOP3 = flop3
+    TURN = turn
+    RIVER = river
+    MOVE = move
+    AMOUNT = amount
+    NEW_STACK = new_stack
+    NEW_POT = new_pot
+
     # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
     poker_cursor = poker_db.cursor()
-
-    poker_cursor.execute('SELECT MAX(g.id) AS max_id FROM poker.games g')
+    select_sql_file = open(sql_path + 'games_max_id.sql').read()
+    select_sql = eval(f'f"""{select_sql_file}"""')
+    poker_cursor.execute(select_sql)
     poker_result = poker_cursor.fetchall()
 
-    insert_sql = 'INSERT INTO poker.history VALUES (' + str(poker_result[0][0]) + ', ' +\
-        str(values_list[0]) + ', ' +\
-        str(values_list[1]) + ', ' +\
-        '\'' + str(values_list[2]) + '\', ' +\
-        str(values_list[3]) + ', ' +\
-        str(values_list[4]) + ', ' +\
-        str(values_list[5]) + ', ' +\
-        '\'' + str(values_list[6]) + '\', ' +\
-        '\'' + str(values_list[7]) + '\', ' +\
-        '\'' + str(values_list[8]) + '\', ' +\
-        '\'' + str(values_list[9]) + '\', ' +\
-        '\'' + str(values_list[10]) + '\', ' +\
-        '\'' + str(values_list[11]) + '\', ' +\
-        str(values_list[12]) + ', '  +\
-        str(values_list[13]) + ', '  +\
-        str(values_list[14]) + ')'
-
+    GAME_ID = poker_result[0][0]
+    insert_sql_file = open(sql_path + 'insert_history.sql').read()
+    insert_sql = eval(f'f"""{insert_sql_file}"""')
     poker_cursor.execute(insert_sql)
     poker_cursor.execute('COMMIT')
-
     # poker_db.close()
 
     return None
 
-def sql_insert_decision_points(values_list, poker_db):
+def sql_insert_decision_points(poker_db, hand, stack, pot, position, phase, nr, history):
     '''insert row into decision points table'''
 
+    HAND = hand
+    STACK = stack
+    POT = pot
+    POSITION = position
+    PHASE = phase
+    NR = nr
+    HISTORY = history
+
     # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
     poker_cursor = poker_db.cursor()
-
-    poker_cursor.execute('SELECT NVL(MAX(d.id), -1) AS max_id FROM poker.decision_points d')
+    select_sql_file = open(sql_path + 'decision_points_max_id.sql').read()
+    select_sql = eval(f'f"""{select_sql_file}"""')
+    poker_cursor.execute(select_sql)
     poker_result = poker_cursor.fetchall()
 
-    insert_sql = 'INSERT INTO poker.decision_points VALUES (' + str(poker_result[0][0] + 1) + ', ' +\
-        '\'' + str(values_list[0]) + '\', ' +\
-        str(values_list[1]) + ', ' +\
-        str(values_list[2]) + ', ' +\
-        str(values_list[3]) + ', ' +\
-        str(values_list[4]) + ', ' +\
-        str(values_list[5]) + ', ' +\
-        '\'' + str(values_list[6]) + '\')'
-
+    ID = poker_result[0][0] + 1
+    insert_sql_file = open(sql_path + 'insert_decision_points.sql').read()
+    insert_sql = eval(f'f"""{insert_sql_file}"""')
     poker_cursor.execute(insert_sql)
     poker_cursor.execute('COMMIT')
-
     # poker_db.close()
 
     return None
 
-def sql_insert_possible_moves(values_list, poker_db):
+def sql_insert_possible_moves(poker_db, move, amount, total_profit=1, played_counter=1, \
+    expected_value=1):
     '''insert row into possible moves table'''
 
+    MOVE = move
+    AMOUNT = amount
+    TOTAL_PROFIT = total_profit
+    PLAYED_COUNTER = played_counter
+    EXPECTED_VALUE = expected_value
+
     # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
     poker_cursor = poker_db.cursor()
-
-    poker_cursor.execute('SELECT NVL(MAX(d.id), -1) AS max_id FROM poker.decision_points d')
+    select_sql_file = open(sql_path + 'decision_points_max_id.sql').read()
+    select_sql = eval(f'f"""{select_sql_file}"""')
+    poker_cursor.execute(select_sql)
     poker_result = poker_cursor.fetchall()
 
-    insert_sql = 'INSERT INTO poker.possible_moves VALUES (' + str(poker_result[0][0]) + ', ' +\
-        '\'' + str(values_list[0]) + '\', ' +\
-        str(values_list[1]) + ', ' +\
-        '1, ' +\
-        '1, ' +\
-        '1)'
-
+    DECISION_POINT_ID = poker_result[0][0]
+    insert_sql_file = open(sql_path + 'insert_possible_moves.sql').read()
+    insert_sql = eval(f'f"""{insert_sql_file}"""')
     poker_cursor.execute(insert_sql)
     poker_cursor.execute('COMMIT')
-
     # poker_db.close()
 
     return None
 
-def decision_point(hand, stack, pot, poker_db, position=2, phase=0, nr=2):
+def decision_point(poker_db, hand, stack, pot, position=2, phase=0, nr=2):
     '''decision point calculations'''
+
+    HAND = hand
+    STACK = stack
+    POT = pot
+    POSITION = position
+    PHASE = phase
+    NR = nr
 
     # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
     poker_cursor = poker_db.cursor()
-
-    poker_cursor.execute('SELECT MAX(g.id) AS max_id FROM poker.games g')
+    select_sql_file = open(sql_path + 'games_max_id.sql').read()
+    select_sql = eval(f'f"""{select_sql_file}"""')
+    poker_cursor.execute(select_sql)
     max_id = poker_cursor.fetchall()
 
-    poker_cursor.execute(
-        'SELECT\n' +\
-        '  NVL(MAX(d.id), -1) AS id\n' +\
-        '\n' +\
-        'FROM\n' +\
-        '  poker.decision_points d\n' +\
-        '\n' +\
-        'WHERE\n' +\
-        '  1 = 1\n' +\
-        '  AND d.hand = \'' + str(hand) + '\'\n' +\
-        '  AND d.stack = ' + str(stack) + '\n' +\
-        '  AND d.pot = ' + str(pot) + '\n' +\
-        '  AND d.position = ' + str(position) + '\n' +\
-        '  AND d.phase = ' + str(phase) + '\n' +\
-        '  AND d.nr = ' + str(nr) + '\n' +\
-        '  AND d.history in (\n' +\
-        '\n' +\
-        '  SELECT\n' +\
-        '    REPLACE(REPLACE(REPLACE(\n' +\
-        '      concat(\'{\',\n' +\
-        '      GROUP_CONCAT(s.jobj SEPARATOR \',\\' + 'n' + '\'),\n' +\
-        '      \'}\'), \'[\"\', \'[\'), \'\"]\', \']\'), \'\\\\\', \'\') as jobj\n' +\
-        '\n' +\
-        '  FROM (\n' +\
-        '    SELECT concat(\'\"phase\":\', json_array(GROUP_CONCAT(h.phase))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-        '    UNION\n' +\
-        '    SELECT concat(\'\"nr\":\', json_array(GROUP_CONCAT(h.nr))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-        '    UNION\n' +\
-        '    SELECT concat(\'\"position\":\', json_array(GROUP_CONCAT(h.position))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-        '    UNION\n' +\
-        '    SELECT concat(\'\"stack\":\', json_array(GROUP_CONCAT(h.stack))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-        '    UNION\n' +\
-        '    SELECT concat(\'\"pot\":\', json_array(GROUP_CONCAT(h.pot))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-        '    UNION\n' +\
-        '    SELECT concat(\'\"flop1\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.flop1, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-        '    UNION\n' +\
-        '    SELECT concat(\'\"flop2\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.flop2, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-        '    UNION\n' +\
-        '    SELECT concat(\'\"flop3\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.flop3, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-        '    UNION\n' +\
-        '    SELECT concat(\'\"turn\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.turn, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-        '    UNION\n' +\
-        '    SELECT concat(\'\"river\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.river, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-        '    UNION\n' +\
-        '    SELECT concat(\'\"move\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.move, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-        '    UNION\n' +\
-        '    SELECT concat(\'\"amount\":\', json_array(GROUP_CONCAT(h.amount))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-        '  ) s\n' +\
-        '\n' +\
-        ')'
-    )
+    GAME_ID = max_id[0][0]
+    select_sql_file = open(sql_path + 'select_decision_points.sql').read()    
+    select_sql = eval(f'f"""{select_sql_file}"""')
+    select_sql = select_sql.replace('*', 'REPLACE(REPLACE(REPLACE(' +\
+        ' CONCAT(\'{\',' +\
+        ' GROUP_CONCAT(s.jobj SEPARATOR \',\\' + 'n\'),' +\
+        ' \'}\'), \'[\"\', \'[\'), \'\"]\', \']\'), \'\\\\\', \'\') as jobj')
+    poker_cursor.execute(select_sql)
     decision_point_id = poker_cursor.fetchall()
 
     if decision_point_id[0][0] != -1:
-        poker_cursor.execute(
-            'SELECT\n' +\
-            '  p.move,\n' +\
-            '  p.expected_value\n' +\
-            '\n' +\
-            'FROM\n' +\
-            '  poker.possible_moves p\n' +\
-            '\n' +\
-            'WHERE\n' +\
-            '  1 = 1\n' +\
-            '  AND p.decision_point_id = ' + str(decision_point_id[0][0])
-        )
+        DECISION_POINT_ID = decision_point_id[0][0]
+        select_sql_file = open(sql_path + 'select_possible_moves.sql').read()
+        select_sql = eval(f'f"""{select_sql_file}"""')
+        poker_cursor.execute(select_sql)
         possible_moves_list = poker_cursor.fetchall()
         possible_moves_list = [[*elem] for elem in zip(*possible_moves_list)]
 
@@ -226,73 +189,34 @@ def decision_point(hand, stack, pot, poker_db, position=2, phase=0, nr=2):
         EV = [elem / sum(EV) for elem in EV]
         final_move = np.random.choice(MOVES, p=EV)
 
-        poker_db.close()
+        # poker_db.close()
 
         return final_move
     else:
-        poker_cursor.execute(
-            'SELECT\n' +\
-            '  REPLACE(REPLACE(REPLACE(\n' +\
-            '    concat(\'{\',\n' +\
-            '    GROUP_CONCAT(s.jobj SEPARATOR \',\\' + 'n' + '\'),\n' +\
-            '    \'}\'), \'[\"\', \'[\'), \'\"]\', \']\'), \'\\\\\', \'\') as jobj\n' +\
-            '\n' +\
-            'FROM (\n' +\
-            '  SELECT concat(\'\"phase\":\', json_array(GROUP_CONCAT(h.phase))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-            '  UNION\n' +\
-            '  SELECT concat(\'\"nr\":\', json_array(GROUP_CONCAT(h.nr))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-            '  UNION\n' +\
-            '  SELECT concat(\'\"position\":\', json_array(GROUP_CONCAT(h.position))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-            '  UNION\n' +\
-            '  SELECT concat(\'\"stack\":\', json_array(GROUP_CONCAT(h.stack))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-            '  UNION\n' +\
-            '  SELECT concat(\'\"pot\":\', json_array(GROUP_CONCAT(h.pot))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-            '  UNION\n' +\
-            '  SELECT concat(\'\"flop1\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.flop1, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-            '  UNION\n' +\
-            '  SELECT concat(\'\"flop2\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.flop2, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-            '  UNION\n' +\
-            '  SELECT concat(\'\"flop3\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.flop3, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-            '  UNION\n' +\
-            '  SELECT concat(\'\"turn\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.turn, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-            '  UNION\n' +\
-            '  SELECT concat(\'\"river\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.river, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-            '  UNION\n' +\
-            '  SELECT concat(\'\"move\":\', json_array(GROUP_CONCAT(concat(\'\"\', h.move, \'\"\')))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-            '  UNION\n' +\
-            '  SELECT concat(\'\"amount\":\', json_array(GROUP_CONCAT(h.amount))) AS jobj FROM poker.history h WHERE 1 = 1 AND h.game_id = ' + str(max_id[0][0]) + ' AND h.nr < ' + str(nr) + '\n' +\
-            ') s'
-        )
+        select_sql_file = open(sql_path + 'select_decision_points_history.sql').read()
+        select_sql = eval(f'f"""{select_sql_file}"""')
+        select_sql = select_sql.replace('*', 'REPLACE(REPLACE(REPLACE(' +\
+            ' CONCAT(\'{\',' +\
+            ' GROUP_CONCAT(s.jobj SEPARATOR \',\\' + 'n\'),' +\
+            ' \'}\'), \'[\"\', \'[\'), \'\"]\', \']\'), \'\\\\\', \'\') as jobj')
+        poker_cursor.execute(select_sql)
         history = poker_cursor.fetchall()
         
-        values_list = [hand, stack, pot, position, phase, nr, history[0][0]]
-        sql_insert_decision_points(values_list=values_list, poker_db=poker_db)
+        sql_insert_decision_points(poker_db=poker_db, hand=hand, stack=stack, pot=pot, position=position, \
+            phase=phase, nr=nr, history=history[0][0])
 
-        poker_cursor.execute(
-            'SELECT\n' +\
-            '  h.move' +\
-            '\n' +\
-            'FROM\n' +\
-            '  poker.history h\n' +\
-            '\n' +\
-            'WHERE\n' +\
-            '  1 = 1\n' +\
-            '  AND h.game_id = ' + str(max_id[0][0]) + '\n' +\
-            '  AND h.phase = ' + str(phase) + '\n' +\
-            '\n' +\
-            'ORDER BY\n' +\
-            '  h.nr DESC\n' +\
-            '\n' +\
-            'LIMIT 1'
-        )
+        select_sql_file = open(sql_path + 'select_history_move.sql').read()
+        select_sql = eval(f'f"""{select_sql_file}"""')
+        poker_cursor.execute(select_sql)
         last_move = poker_cursor.fetchall()
+        
         for move in funcs_poker.check_moves(last_move=last_move[0][0]):
             if move in ['fold', 'check']:
                 amount = 0
             else:
                 amount = 5
-            sql_insert_possible_moves(values_list=[move, amount], poker_db=poker_db)
+            sql_insert_possible_moves(poker_db=poker_db, move=move, amount=amount)
 
         # poker_db.close()
 
-        return decision_point(hand, stack, pot, position, phase, nr)
+        return decision_point(poker_db, hand, stack, pot, position, phase, nr)

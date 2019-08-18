@@ -1,0 +1,13 @@
+INSERT
+
+INTO
+  poker.possible_moves
+
+VALUES (
+  {DECISION_POINT_ID},
+  '{MOVE}',
+  {AMOUNT},
+  {TOTAL_PROFIT},
+  {PLAYED_COUNTER},
+  {EXPECTED_VALUE}
+)
