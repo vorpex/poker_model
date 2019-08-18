@@ -28,18 +28,17 @@ player5_stack = 1000
 small_blind = 10
 big_blind = 2 * small_blind
 
-funcs_db.sql_delete_all(table='games', poker_db=poker_db)
-funcs_db.sql_delete_all(table='history', poker_db=poker_db)
-funcs_db.sql_delete_all(table='decision_points', poker_db=poker_db)
-funcs_db.sql_delete_all(table='possible_moves', poker_db=poker_db)
-funcs_db.sql_insert_games(number_of_players=number_of_players, player0_stack=player0_stack, \
+funcs_db.sql_delete_all(poker_db=poker_db, table='games')
+funcs_db.sql_delete_all(poker_db=poker_db, table='history')
+funcs_db.sql_delete_all(poker_db=poker_db, table='decision_points')
+funcs_db.sql_delete_all(poker_db=poker_db, table='possible_moves')
+funcs_db.sql_insert_games(poker_db=poker_db, number_of_players=number_of_players, player0_stack=player0_stack, \
     player1_stack=player1_stack, player2_stack=player2_stack, player3_stack=player3_stack, \
-    player4_stack=player4_stack, player5_stack=player5_stack, small_blind=small_blind, big_blind=big_blind, \
-    poker_db=poker_db)
+    player4_stack=player4_stack, player5_stack=player5_stack, small_blind=small_blind, big_blind=big_blind)
 
 # TABLE INITIALIZATION
 
-TABLE = funcs_poker.table_init(nr_of_players=number_of_players, player0_stack=player0_stack, \
+TABLE = funcs_poker.table_init(number_of_players=number_of_players, player0_stack=player0_stack, \
     player1_stack=player1_stack, player2_stack=player2_stack, player3_stack=player3_stack, \
     player4_stack=player4_stack, player5_stack=player5_stack)
 POT = TABLE[0]
@@ -74,21 +73,21 @@ PLAYER_MOVE_FLAGS = [1 for player in PLAYERS]
 # PREFLOP PHASE
 
 ## small blind and big blind moves
-funcs_poker.move(player=PLAYER_ORDER[0], move='small_blind', pot=POT, amount=small_blind, poker_db=poker_db)
-funcs_poker.move(player=PLAYER_ORDER[1], move='big_blind', pot=POT, amount=big_blind, nr=1, poker_db=poker_db)
+funcs_poker.move(poker_db=poker_db, player=PLAYER_ORDER[0], move='small_blind', pot=POT, amount=small_blind)
+funcs_poker.move(poker_db=poker_db, player=PLAYER_ORDER[1], move='big_blind', pot=POT, nr=1, amount=big_blind)
 
 ## further moves
 phase = 0
 nr = 2
 for i in range(2, 6):
     
-    move = funcs_db.decision_point(hand=PLAYER_ORDER[i].player_hand_simple(), stack=PLAYER_ORDER[i].stack(), \
-        pot=POT.show_pot(), position=PLAYER_ORDER[i].position_nr(), phase=phase, nr=nr, poker_db=poker_db)
+    move = funcs_db.decision_point(poker_db=poker_db, hand=PLAYER_ORDER[i].player_hand_simple(), stack=PLAYER_ORDER[i].stack(), \
+        pot=POT.show_pot(), position=PLAYER_ORDER[i].position_nr(), phase=phase, nr=nr)
     if move in ['fold', 'check']:
-        funcs_poker.move(player=PLAYER_ORDER[i], move=move, pot=POT, phase=phase, nr=nr, poker_db=poker_db)
+        funcs_poker.move(poker_db=poker_db, player=PLAYER_ORDER[i], move=move, pot=POT, phase=phase, nr=nr)
     elif move in ['call', 'raise']:
         amount = 60 # calculation for call_amount
-        funcs_poker.move(player=PLAYER_ORDER[i], move='call', pot=POT, phase=phase, nr=nr, amount=amount, poker_db=poker_db)
+        funcs_poker.move(poker_db=poker_db, player=PLAYER_ORDER[i], move='call', pot=POT, phase=phase, nr=nr, amount=amount)
     else:
         pass
     

@@ -7,14 +7,14 @@ import funcs_db
 import pplayer
 import ppot
 
-def table_init(nr_of_players, player0_stack, player1_stack, player2_stack, player3_stack, \
+def table_init(number_of_players, player0_stack, player1_stack, player2_stack, player3_stack, \
     player4_stack, player5_stack):
     '''players initialization'''
 
     pot = ppot.Pot()
 
     players = []
-    for i in range(nr_of_players):
+    for i in range(number_of_players):
 
         if i == 0:
             stack = player0_stack
@@ -34,14 +34,14 @@ def table_init(nr_of_players, player0_stack, player1_stack, player2_stack, playe
 
     return pot, players
 
-def move(player, move, pot, poker_db, phase=0, nr=0, flop1='none', flop2='none', flop3='none', turn='none', river='none', \
+def move(poker_db, player, move, pot, phase=0, nr=0, flop1='none', flop2='none', flop3='none', turn='none', river='none', \
         amount=0):
     '''move'''
 
     if isinstance(player, pplayer.Player) and isinstance(pot, ppot.Pot):
-        funcs_db.sql_insert_history(values_list=[phase, nr, player.general_name(), player.position_nr(), player.stack(), \
+        funcs_db.sql_insert_history(poker_db=poker_db, values_list=[phase, nr, player.general_name(), player.position_nr(), player.stack(), \
             pot.show_pot(), flop1, flop2, flop3, turn, river, move, amount, player.stack() - amount, \
-            pot.show_pot() + amount], poker_db=poker_db)
+            pot.show_pot() + amount])
         player.decrease_stack(amount)
         pot.increase_pot(amount)
     else:

@@ -11,7 +11,7 @@ import ppot
 
 sql_path = 'c:\\Users\\adam.sohonyai\\Documents\\GitHub\\poker_model\\sql\\'
 
-def sql_delete_all(table, poker_db):
+def sql_delete_all(poker_db, table):
     '''delete all rows from table'''
 
     TABLE = table
@@ -26,8 +26,8 @@ def sql_delete_all(table, poker_db):
 
     return None
 
-def sql_insert_games(number_of_players, player0_stack, player1_stack, player2_stack, player3_stack, \
-    player4_stack, player5_stack, small_blind, big_blind, poker_db):
+def sql_insert_games(poker_db, number_of_players, player0_stack, player1_stack, player2_stack, player3_stack, \
+    player4_stack, player5_stack, small_blind, big_blind):
     '''insert row into games table'''
 
     NUMBER_OF_PLAYERS = number_of_players
