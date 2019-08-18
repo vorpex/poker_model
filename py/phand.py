@@ -10,6 +10,21 @@ import bestfive
 
 import pcard
 
+def sort_hand(card0, card1):
+    '''sort hand cards'''
+
+    hand_list = [card0.show_card(), card1.show_card()]
+    hand_list.sort()
+    hand_cards = []
+    for card in hand_list:
+        
+        if card == card0.show_card():
+            hand_cards.append(card0)
+        else:
+            hand_cards.append(card1)
+    
+    return hand_cards[0], hand_cards[1]
+
 class Hand(object):
     '''hand class'''
     
@@ -28,8 +43,7 @@ class Hand(object):
         >>> HAND = DECK.make_hand()
         '''
         if isinstance(card0, pcard.Card) and isinstance(card1, pcard.Card):
-            self.__card0 = card0
-            self.__card1 = card1
+            self.__card0, self.__card1 = sort_hand(card0, card1)
         else:
             raise TypeError('Wrong type')
 

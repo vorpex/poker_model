@@ -55,7 +55,7 @@ class Player(object):
 
         return self.__hand
     
-    def show_player_hand_db(self):
+    def player_hand_simple(self):
         '''show hand in db format
         
         >>> import pplayer

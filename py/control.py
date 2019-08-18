@@ -1,85 +1,94 @@
-'''poker test'''
+'''poker model control script'''
 
 # pylint: disable=E1101, E1601, W0612
 
-import db_funcs
-import db_moves
+import gc
+import mysql.connector
+
+import funcs_db
+import funcs_poker
 
 import pdeck
+
+gc.collect()
+
+# OPEN CONNECTION TO POKER DB
+
+poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
 
 # GAME PARAMETERS
 
 number_of_players = 6
-starting_stack = 1000
+player0_stack = 1000
+player1_stack = 1000
+player2_stack = 1000
+player3_stack = 1000
+player4_stack = 1000
+player5_stack = 1000
 small_blind = 10
 big_blind = 2 * small_blind
 
-db_funcs.sql_delete_all(table='games')
-db_funcs.sql_delete_all(table='history')
-db_funcs.sql_delete_all(table='decision_points')
-db_funcs.sql_delete_all(table='possible_moves')
-db_funcs.sql_insert_games(values_list=[number_of_players, starting_stack, small_blind, big_blind])
+funcs_db.sql_delete_all(table='games', poker_db=poker_db)
+funcs_db.sql_delete_all(table='history', poker_db=poker_db)
+funcs_db.sql_delete_all(table='decision_points', poker_db=poker_db)
+funcs_db.sql_delete_all(table='possible_moves', poker_db=poker_db)
+funcs_db.sql_insert_games(number_of_players=number_of_players, player0_stack=player0_stack, \
+    player1_stack=player1_stack, player2_stack=player2_stack, player3_stack=player3_stack, \
+    player4_stack=player4_stack, player5_stack=player5_stack, small_blind=small_blind, big_blind=big_blind, \
+    poker_db=poker_db)
 
 # TABLE INITIALIZATION
 
-TABLE = db_funcs.table_init(nr_of_players=number_of_players, starting_stack=starting_stack)
+TABLE = funcs_poker.table_init(nr_of_players=number_of_players, player0_stack=player0_stack, \
+    player1_stack=player1_stack, player2_stack=player2_stack, player3_stack=player3_stack, \
+    player4_stack=player4_stack, player5_stack=player5_stack)
 POT = TABLE[0]
 PLAYERS = TABLE[1]
 
 # GAME INITIALIZATION
 
-# # shift the players position by 1
+## shift the players position by 1
 for player in PLAYERS:
 
     player.add_position((player.position_nr() + 1) % len(PLAYERS))
 
-# # create deck and board
+## create deck and board
 DECK = pdeck.Deck()
 BOARD = DECK.make_board()
 
-# # create hands and add them to players
+## create hands and add them to players
 HANDS = [DECK.make_hand() for player in PLAYERS]
 for i in range(len(PLAYERS)):
 
     PLAYERS[i].add_hand(HANDS[i])
 
-# # define players order
+## define players order
 PLAYER_ORDER = [0 for player in PLAYERS]
 for player in PLAYERS:
 
     PLAYER_ORDER[player.position_nr()] = player
 
-# # define players move flags
+## define players move flags
 PLAYER_MOVE_FLAGS = [1 for player in PLAYERS]
 
 # PREFLOP PHASE
 
-# # small blind and big blind moves
-db_moves.small_blind_move(player=PLAYER_ORDER[0], pot=POT, amount=small_blind)
-db_moves.big_blind_move(player=PLAYER_ORDER[1], pot=POT, amount=big_blind)
+## small blind and big blind moves
+funcs_poker.move(player=PLAYER_ORDER[0], move='small_blind', pot=POT, amount=small_blind, poker_db=poker_db)
+funcs_poker.move(player=PLAYER_ORDER[1], move='big_blind', pot=POT, amount=big_blind, nr=1, poker_db=poker_db)
 
-# # further moves
+## further moves
 phase = 0
 nr = 2
 for i in range(2, 6):
     
-    move = db_funcs.decision_point(hand=PLAYER_ORDER[i].show_player_hand_db(), stack=PLAYER_ORDER[i].stack(), \
-        pot=POT.show_pot(), position=PLAYER_ORDER[i].position_nr(), phase=phase, nr=nr)
-    if move == 'fold':
-        db_moves.fold_move(player=PLAYER_ORDER[i], pot=POT, phase=phase, nr=nr)
-    elif move == 'check':
-        db_moves.check_move(player=PLAYER_ORDER[i], pot=POT, phase=phase, nr=nr)
-    elif move == 'call':
-        call_amount = 60 # calculation for call_amount
-        db_moves.call_move(player=PLAYER_ORDER[i], pot=POT, phase=phase, nr=nr, amount=call_amount)
-    elif move == 'bet':
-        bet_amount = 60 # calculation for bet_amount
-        db_moves.bet_move(player=PLAYER_ORDER[i], pot=POT, phase=phase, nr=nr, amount=bet_amount)
-    elif move == 'raise':
-        raise_amount = 60 # calculation for bet_amount
-        db_moves.raise_move(player=PLAYER_ORDER[i], pot=POT, phase=phase, nr=nr, amount=raise_amount)
-    elif move == 'allin':
-        db_moves.allin_move(player=PLAYER_ORDER[i], pot=POT, phase=phase, nr=nr, amount=PLAYER_ORDER[i].stack())
+    move = funcs_db.decision_point(hand=PLAYER_ORDER[i].player_hand_simple(), stack=PLAYER_ORDER[i].stack(), \
+        pot=POT.show_pot(), position=PLAYER_ORDER[i].position_nr(), phase=phase, nr=nr, poker_db=poker_db)
+    if move in ['fold', 'check']:
+        funcs_poker.move(player=PLAYER_ORDER[i], move=move, pot=POT, phase=phase, nr=nr, poker_db=poker_db)
+    elif move in ['call', 'raise']:
+        amount = 60 # calculation for call_amount
+        funcs_poker.move(player=PLAYER_ORDER[i], move='call', pot=POT, phase=phase, nr=nr, amount=amount, poker_db=poker_db)
     else:
         pass
     
@@ -87,50 +96,12 @@ for i in range(2, 6):
 
     nr = nr + 1
 
-# while sum(PLAYER_MOVE_FLAGS) != 0: # extend with other conditions
+## while sum(PLAYER_MOVE_FLAGS) != 0: # extend with other conditions
 
-#     for i in range(6):
+# FLOP PHASE
 
-#         db_funcs.create_decision_point(
-#             PLAYER_ORDER[i], \
-#             PLAYER_ORDER[i].show_player_hand().show_hand()[0].show_card(), \
-#             PLAYER_ORDER[i].show_player_hand().show_hand()[1].show_card(), \
-#             PLAYER_ORDER[i].chips(), \
-#             PLAYER_ORDER[i].position_nr(), \
-#             POT.show_pot()
-#         )
+# TURN PHASE
 
-#         if PLAYER_MOVE_FLAGS[i] == 1:
-#             pmf = db_funcs.check_possible_moves(
-#                     PLAYER_ORDER[i], \
-#                     PLAYER_ORDER[i].show_player_hand().show_hand()[0].show_card(), \
-#                     PLAYER_ORDER[i].show_player_hand().show_hand()[1].show_card(), \
-#                     PLAYER_ORDER[i].chips(), \
-#                     PLAYER_ORDER[i].position_nr(), \
-#                     POT.show_pot()
-#                 )
+# RIVER PHASE
 
-#             if pmf == 0:
-#                 db_funcs.create_possible_moves(
-#                     PLAYER_ORDER[i], \
-#                     PLAYER_ORDER[i].show_player_hand().show_hand()[0].show_card(), \
-#                     PLAYER_ORDER[i].show_player_hand().show_hand()[1].show_card(), \
-#                     PLAYER_ORDER[i].chips(), \
-#                     PLAYER_ORDER[i].position_nr(), \
-#                     POT.show_pot()
-#                 )
-#             else:
-#                 db_funcs.call_possible_move(
-#                     PLAYER_ORDER[i], \
-#                     PLAYER_MOVE_FLAGS, \
-#                     PLAYER_ORDER[i].chips(), \
-#                     POT.show_pot()
-#                 )
-#         else:
-#             pass
-
-# # FLOP PHASE
-
-# # TURN PHASE
-
-# # RIVER PHASE
+poker_db.close()

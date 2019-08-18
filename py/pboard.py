@@ -4,6 +4,23 @@
 
 import pcard
 
+def sort_flop(card0, card1, card2):
+    '''sort flop cards'''
+
+    flop_list = [card0.show_card(), card1.show_card(), card2.show_card()]
+    flop_list.sort()
+    flop_cards = []
+    for card in flop_list:
+
+        if card == card0.show_card():
+            flop_cards.append(card0)
+        elif card == card1.show_card():
+            flop_cards.append(card1)
+        else:
+            flop_cards.append(card2)
+    
+    return flop_cards[0], flop_cards[1], flop_cards[2]
+
 class Board(object):
     '''board class'''
 
@@ -27,9 +44,7 @@ class Board(object):
 
         if isinstance(card0, pcard.Card) and isinstance(card1, pcard.Card) and isinstance(card2, pcard.Card) and \
         isinstance(card3, pcard.Card) and isinstance(card4, pcard.Card):
-            self.__flop0 = card0
-            self.__flop1 = card1
-            self.__flop2 = card2
+            self.__flop0, self.__flop1, self.__flop2 = sort_flop(card0, card1, card2)
             self.__turn = card3
             self.__river = card4
         else:
@@ -42,7 +57,7 @@ class Board(object):
         >>>
         >>> DECK = pdeck.Deck()
         >>> BOARD = DECK.make_hand()
-        >>> BOARD.show()
+        >>> BOARD.show_board()
         '''
 
         return self.__flop0, self.__flop1, self.__flop2, self.__turn, self.__river

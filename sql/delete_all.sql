@@ -1,0 +1,7 @@
+DELETE
+
+FROM
+  poker.{TABLE}
+
+WHERE
+  1 = 1

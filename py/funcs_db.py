@@ -2,51 +2,66 @@
 
 # pylint: disable=E1101, E1601, W0612
 
-import mysql.connector
 import numpy as np
+
+import funcs_poker
 
 import pplayer
 import ppot
 
-def sql_delete_all(table):
+sql_path = 'c:\\Users\\adam.sohonyai\\Documents\\GitHub\\poker_model\\sql\\'
+
+def sql_delete_all(table, poker_db):
     '''delete all rows from table'''
 
-    poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
-    poker_cursor = poker_db.cursor()
+    TABLE = table
+    delete_sql_file = open(sql_path + 'delete_all.sql').read()
+    delete_sql = eval(f'f"""{delete_sql_file}"""')
 
-    delete_sql = 'DELETE FROM poker.' + str(table) + ' WHERE 1 = 1'
+    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
+    poker_cursor = poker_db.cursor()
     poker_cursor.execute(delete_sql)
     poker_cursor.execute('COMMIT')
-
-    poker_db.close()
+    # poker_db.close()
 
     return None
 
-def sql_insert_games(values_list):
+def sql_insert_games(number_of_players, player0_stack, player1_stack, player2_stack, player3_stack, \
+    player4_stack, player5_stack, small_blind, big_blind, poker_db):
     '''insert row into games table'''
 
-    poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
-    poker_cursor = poker_db.cursor()
+    NUMBER_OF_PLAYERS = number_of_players
+    PLAYER0_STACK = player0_stack
+    PLAYER1_STACK = player1_stack
+    PLAYER2_STACK = player2_stack
+    PLAYER3_STACK = player3_stack
+    PLAYER4_STACK = player4_stack
+    PLAYER5_STACK = player5_stack
+    SMALL_BLIND = small_blind
+    BIG_BLIND = big_blind
+    games_max_id_sql_file = open(sql_path + 'games_max_id.sql').read()
+    games_max_id_sql = eval(f'f"""{games_max_id_sql_file}"""')
 
-    poker_cursor.execute('SELECT NVL(MAX(g.id), -1) AS max_id FROM poker.games g')
+    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
+    poker_cursor = poker_db.cursor()
+    poker_cursor.execute(games_max_id_sql)
     poker_result = poker_cursor.fetchall()
     
-    insert_sql = 'INSERT INTO poker.games VALUES (' + str(poker_result[0][0] + 1) + ', '
-    for value in values_list:
-        insert_sql = insert_sql + str(value) + ', '
+    ID = poker_result[0][0] + 1
+    insert_sql_file = open(sql_path + 'insert_games.sql').read()
+    insert_sql = eval(f'f"""{insert_sql_file}"""')
     
-    insert_sql = insert_sql[:-2] + ')'
     poker_cursor.execute(insert_sql)
     poker_cursor.execute('COMMIT')
 
-    poker_db.close()
+    # poker_db.close()
 
     return None
 
-def sql_insert_history(values_list):
+def sql_insert_history(values_list, poker_db):
     '''insert row into history table'''
 
-    poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
+    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
     poker_cursor = poker_db.cursor()
 
     poker_cursor.execute('SELECT MAX(g.id) AS max_id FROM poker.games g')
@@ -72,14 +87,14 @@ def sql_insert_history(values_list):
     poker_cursor.execute(insert_sql)
     poker_cursor.execute('COMMIT')
 
-    poker_db.close()
+    # poker_db.close()
 
     return None
 
-def sql_insert_decision_points(values_list):
+def sql_insert_decision_points(values_list, poker_db):
     '''insert row into decision points table'''
 
-    poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
+    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
     poker_cursor = poker_db.cursor()
 
     poker_cursor.execute('SELECT NVL(MAX(d.id), -1) AS max_id FROM poker.decision_points d')
@@ -97,14 +112,14 @@ def sql_insert_decision_points(values_list):
     poker_cursor.execute(insert_sql)
     poker_cursor.execute('COMMIT')
 
-    poker_db.close()
+    # poker_db.close()
 
     return None
 
-def sql_insert_possible_moves(values_list):
+def sql_insert_possible_moves(values_list, poker_db):
     '''insert row into possible moves table'''
 
-    poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
+    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
     poker_cursor = poker_db.cursor()
 
     poker_cursor.execute('SELECT NVL(MAX(d.id), -1) AS max_id FROM poker.decision_points d')
@@ -120,53 +135,14 @@ def sql_insert_possible_moves(values_list):
     poker_cursor.execute(insert_sql)
     poker_cursor.execute('COMMIT')
 
-    poker_db.close()
+    # poker_db.close()
 
     return None
 
-def table_init(nr_of_players, starting_stack):
-    '''players initialization'''
-
-    pot = ppot.Pot()
-
-    players = []
-    for i in range(nr_of_players):
-
-        players.append(pplayer.Player(i, starting_stack))
-        players[i].add_position(i)
-
-    return pot, players
-
-def check_moves(last_move):
-    '''check possibile moves'''
-
-    if last_move is None:
-        moves = ['check', 'bet', 'allin']
-    elif last_move == 'small_blind':
-        moves = ['fold', 'call', 'raise', 'allin']
-    elif last_move == 'big_blind':
-        moves = ['fold', 'call', 'raise', 'allin']
-    elif last_move == 'fold':
-        moves = ['call', 'raise', 'allin']
-    elif last_move == 'check':
-        moves = ['check', 'bet', 'allin']
-    elif last_move == 'call':
-        moves = ['fold', 'call', 'raise', 'allin']
-    elif last_move == 'bet':
-        moves = ['fold', 'call', 'raise', 'allin']
-    elif last_move == 'raise':
-        moves = ['fold', 'call', 'raise', 'allin']
-    elif last_move == 'allin':
-        moves = ['fold', 'call', 'raise', 'allin']
-    else:
-        pass
-
-    return moves
-
-def decision_point(hand, stack, pot, position=2, phase=0, nr=2):
+def decision_point(hand, stack, pot, poker_db, position=2, phase=0, nr=2):
     '''decision point calculations'''
 
-    poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
+    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
     poker_cursor = poker_db.cursor()
 
     poker_cursor.execute('SELECT MAX(g.id) AS max_id FROM poker.games g')
@@ -290,7 +266,7 @@ def decision_point(hand, stack, pot, position=2, phase=0, nr=2):
         history = poker_cursor.fetchall()
         
         values_list = [hand, stack, pot, position, phase, nr, history[0][0]]
-        sql_insert_decision_points(values_list=values_list)
+        sql_insert_decision_points(values_list=values_list, poker_db=poker_db)
 
         poker_cursor.execute(
             'SELECT\n' +\
@@ -310,13 +286,13 @@ def decision_point(hand, stack, pot, position=2, phase=0, nr=2):
             'LIMIT 1'
         )
         last_move = poker_cursor.fetchall()
-        for move in check_moves(last_move=last_move[0][0]):
+        for move in funcs_poker.check_moves(last_move=last_move[0][0]):
             if move in ['fold', 'check']:
                 amount = 0
             else:
                 amount = 5
-            sql_insert_possible_moves(values_list=[move, amount])
+            sql_insert_possible_moves(values_list=[move, amount], poker_db=poker_db)
 
-        poker_db.close()
+        # poker_db.close()
 
         return decision_point(hand, stack, pot, position, phase, nr)
