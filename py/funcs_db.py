@@ -151,9 +151,10 @@ def sql_insert_possible_moves(poker_db, move, amount, total_profit=1, played_cou
 
     return None
 
-def decision_point(poker_db, hand, stack, pot, position=2, phase=0, nr=2):
+def decision_point(poker_db, player_name, hand, stack, pot, position=2, phase=0, nr=2):
     '''decision point calculations'''
 
+    PLAYER_NAME = player_name
     HAND = hand
     STACK = stack
     POT = pot
@@ -219,13 +220,15 @@ def decision_point(poker_db, hand, stack, pot, position=2, phase=0, nr=2):
         select_sql = eval(f'f"""{select_sql_file}"""')
         poker_cursor.execute(select_sql)
         last_move = poker_cursor.fetchall()
-        
-        for move in funcs_poker.check_moves(last_move=last_move[0][0]):
-            if move in ['fold', 'check']:
-                amount = 0
-            else:
-                amount = 50
-            sql_insert_possible_moves(poker_db=poker_db, move=move, amount=amount)
+
+        select_sql_file = open(sql_path + 'select_history_amount.sql').read()
+        select_sql = eval(f'f"""{select_sql_file}"""')
+        poker_cursor.execute(select_sql)
+        sum_amount = poker_cursor.fetchall()
+
+        for key, value in funcs_poker.check_moves(last_move=last_move[0][0], sum_amount=sum_amount[0][0], \
+            stack=stack, position=position).items():
+            sql_insert_possible_moves(poker_db=poker_db, move=key, amount=value)
 
         # poker_db.close()
 

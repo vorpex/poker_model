@@ -79,9 +79,9 @@ phase = 0
 nr = 2
 for i in range(2, 6):
     
-    move, amount = funcs_db.decision_point(poker_db=poker_db, hand=PLAYERS_ORDERED[i].player_hand_simple(), \
-        stack=PLAYERS_ORDERED[i].stack(), pot=POT.show_pot(), position=PLAYERS_ORDERED[i].position_nr(), \
-        phase=phase, nr=nr)
+    move, amount = funcs_db.decision_point(poker_db=poker_db, player_name=PLAYERS_ORDERED[i].general_name(), \
+        hand=PLAYERS_ORDERED[i].player_hand_simple(), stack=PLAYERS_ORDERED[i].stack(), pot=POT.show_pot(), \
+        position=PLAYERS_ORDERED[i].position_nr(), phase=phase, nr=nr)
     funcs_poker.move(poker_db=poker_db, player=PLAYERS_ORDERED[i], pot=POT, move=move, phase=phase, nr=nr, \
         amount=amount)
     

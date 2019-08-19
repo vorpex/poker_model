@@ -2,6 +2,8 @@
 
 # pylint: disable=E1101, E1601, W0612
 
+import numpy as np
+
 import funcs_db
 
 import pplayer
@@ -50,15 +52,22 @@ def move(poker_db, player, pot, move, phase=0, nr=0, flop1='none', flop2='none',
     
     return None
 
-def check_moves(last_move):
+def check_moves(last_move, sum_amount, stack, position):
     '''check possibile moves'''
 
-    if last_move is None:
-        moves = ['check', 'raise']
+    if sum_amount >= stack:
+        call_amount = int(stack)
+    else:
+        call_amount = int(sum_amount)
+        new_stack = stack - call_amount
+        raise_amount = int(call_amount + np.random.random_integers(1, new_stack))
+
+    if last_move is None or last_move == 'check':
+        moves = {'check': 0, 'raise': raise_amount}
+    elif position == 1 and sum_amount == 0 and last_move in ['fold', 'call']:
+        moves = {'check': 0, 'raise': raise_amount}
     elif last_move in ['small_blind', 'big_blind', 'fold', 'call', 'raise']:
-        moves = ['fold', 'call', 'raise']
-    elif last_move == 'check':
-        moves = ['check', 'raise']
+        moves = {'fold': 0, 'call': call_amount, 'raise': raise_amount}
     else:
         pass
 
