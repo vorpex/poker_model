@@ -225,11 +225,11 @@ def decision_point(poker_db, player_name, hand, stack, pot, position=2, phase=0,
         select_sql = eval(f'f"""{select_sql_file}"""')
         poker_cursor.execute(select_sql)
         sum_amount = poker_cursor.fetchall()
-
+        
         for key, value in funcs_poker.check_moves(last_move=last_move[0][0], sum_amount=sum_amount[0][0], \
             stack=stack, position=position).items():
             sql_insert_possible_moves(poker_db=poker_db, move=key, amount=value)
 
         # poker_db.close()
 
-        return decision_point(poker_db, hand, stack, pot, position, phase, nr)
+        return decision_point(poker_db, player_name, hand, stack, pot, position, phase, nr)
