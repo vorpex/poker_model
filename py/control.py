@@ -66,7 +66,8 @@ PLAYERS_ORDERED = {player.position_nr(): player for player in PLAYERS}
 PLAYERS_ORDERED = dict(sorted(PLAYERS_ORDERED.items()))
 
 ## define players move flags
-PLAYER_MOVE_FLAGS = [1 for player in PLAYERS]
+PLAYERS_MOVE_ORDERED = {player.position_nr(): 1 for player in PLAYERS}
+PLAYERS_MOVE_ORDERED = dict(sorted(PLAYERS_MOVE_ORDERED.items()))
 
 # PREFLOP PHASE
 
@@ -84,12 +85,30 @@ for i in range(2, 6):
         position=PLAYERS_ORDERED[i].position_nr(), phase=phase, nr=nr)
     funcs_poker.move(poker_db=poker_db, player=PLAYERS_ORDERED[i], pot=POT, move=move, phase=phase, nr=nr, \
         amount=amount)
+    if move == 'fold':
+        PLAYERS_MOVE_ORDERED[PLAYERS_ORDERED[i].position_nr()] = 0
+    else:
+        pass
     
     # save move information for every players
 
     nr = nr + 1
 
-## while sum(PLAYER_MOVE_FLAGS) != 0: # extend with other conditions
+while sum(PLAYERS_MOVE_ORDERED.values()) > 0:
+    
+    for i in range(0, 6):
+
+        last_move, action_flag = funcs_db.details_to_move(poker_db=poker_db, phase=phase, position=i)
+        if last_move != 'fold' and action_flag > 0:
+            move, amount = funcs_db.decision_point(poker_db=poker_db, player_name=PLAYERS_ORDERED[i].general_name(), \
+                hand=PLAYERS_ORDERED[i].player_hand_simple(), stack=PLAYERS_ORDERED[i].stack(), pot=POT.show_pot(), \
+                position=PLAYERS_ORDERED[i].position_nr(), phase=phase, nr=nr)
+            funcs_poker.move(poker_db=poker_db, player=PLAYERS_ORDERED[i], pot=POT, move=move, phase=phase, nr=nr, \
+                amount=amount)
+            if move == 'fold':
+                PLAYERS_MOVE_ORDERED[PLAYERS_ORDERED[i].position_nr()] = 0
+            else:
+                pass
 
 # FLOP PHASE
 

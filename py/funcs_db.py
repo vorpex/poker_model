@@ -233,3 +233,25 @@ def decision_point(poker_db, player_name, hand, stack, pot, position=2, phase=0,
         # poker_db.close()
 
         return decision_point(poker_db, player_name, hand, stack, pot, position, phase, nr)
+
+def details_to_move(poker_db, phase, position):
+    '''gather details to check move possibility'''
+
+    POSITION = position
+    PHASE = phase
+
+    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
+    poker_cursor = poker_db.cursor()
+    select_sql_file = open(sql_path + 'games_max_id.sql').read()
+    select_sql = eval(f'f"""{select_sql_file}"""')
+    poker_cursor.execute(select_sql)
+    poker_result = poker_cursor.fetchall()
+
+    GAME_ID = poker_result[0][0]
+    poker_cursor = poker_db.cursor()
+    select_sql_file = open(sql_path + 'select_details_to_move.sql').read()
+    select_sql = eval(f'f"""{select_sql_file}"""')
+    poker_cursor.execute(select_sql)
+    poker_result = poker_cursor.fetchall() 
+
+    return poker_result[0][0], poker_result[1][0]
