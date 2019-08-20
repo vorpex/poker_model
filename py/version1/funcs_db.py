@@ -9,7 +9,7 @@ import funcs_poker
 import pplayer
 import ppot
 
-sql_path = 'c:\\Users\\adam.sohonyai\\Documents\\GitHub\\poker_model\\sql\\'
+sql_path = 'c:\\Users\\adam.sohonyai\\Documents\\GitHub\\poker_model\\sql\\version1\\'
 
 def sql_delete_all(poker_db, table):
     '''delete all rows from table'''

@@ -19,12 +19,12 @@ poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poke
 # GAME PARAMETERS
 
 number_of_players = 6
-player0_stack = 1000
-player1_stack = 1000
-player2_stack = 1000
-player3_stack = 1000
-player4_stack = 1000
-player5_stack = 1000
+player0_stack = 2000
+player1_stack = 2000
+player2_stack = 2000
+player3_stack = 2000
+player4_stack = 2000
+player5_stack = 2000
 small_blind = 10
 big_blind = 2 * small_blind
 
@@ -94,21 +94,24 @@ for i in range(2, 6):
 
     nr = nr + 1
 
-while sum(PLAYERS_MOVE_ORDERED.values()) > 0:
+# THIS SECTION BELOW SHOULD BE REVISED
+# while sum(PLAYERS_MOVE_ORDERED.values()) > 0:
     
-    for i in range(0, 6):
+#     for i in range(0, 6):
 
-        last_move, action_flag = funcs_db.details_to_move(poker_db=poker_db, phase=phase, position=i)
-        if last_move != 'fold' and action_flag > 0:
-            move, amount = funcs_db.decision_point(poker_db=poker_db, player_name=PLAYERS_ORDERED[i].general_name(), \
-                hand=PLAYERS_ORDERED[i].player_hand_simple(), stack=PLAYERS_ORDERED[i].stack(), pot=POT.show_pot(), \
-                position=PLAYERS_ORDERED[i].position_nr(), phase=phase, nr=nr)
-            funcs_poker.move(poker_db=poker_db, player=PLAYERS_ORDERED[i], pot=POT, move=move, phase=phase, nr=nr, \
-                amount=amount)
-            if move == 'fold':
-                PLAYERS_MOVE_ORDERED[PLAYERS_ORDERED[i].position_nr()] = 0
-            else:
-                pass
+#         last_move, action_flag = funcs_db.details_to_move(poker_db=poker_db, phase=phase, position=i)
+#         if last_move != 'fold' and action_flag > 0:
+#             move, amount = funcs_db.decision_point(poker_db=poker_db, player_name=PLAYERS_ORDERED[i].general_name(), \
+#                 hand=PLAYERS_ORDERED[i].player_hand_simple(), stack=PLAYERS_ORDERED[i].stack(), pot=POT.show_pot(), \
+#                 position=PLAYERS_ORDERED[i].position_nr(), phase=phase, nr=nr)
+#             funcs_poker.move(poker_db=poker_db, player=PLAYERS_ORDERED[i], pot=POT, move=move, phase=phase, nr=nr, \
+#                 amount=amount)
+#             if move == 'fold':
+#                 PLAYERS_MOVE_ORDERED[PLAYERS_ORDERED[i].position_nr()] = 0
+#             else:
+#                 pass
+
+#             nr = nr + 1
 
 # FLOP PHASE
 
