@@ -9,7 +9,7 @@ FROM (
     h.move AS move
   
   FROM
-    poker.history h
+    poker_version1.history h
 
   WHERE
     1 = 1
@@ -31,7 +31,7 @@ INNER JOIN (
     SUM(CASE WHEN h1.move IN ('small_blind', 'big_blind', 'raise') THEN 1 ELSE 0 END) AS flag
 
   FROM
-    poker.history h1
+    poker_version1.history h1
 
   WHERE
     1 = 1
@@ -43,7 +43,7 @@ INNER JOIN (
       MAX(h2.nr) AS max_nr
   
     FROM
-      poker.history h2
+      poker_version1.history h2
   
     WHERE
       1 = 1

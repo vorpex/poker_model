@@ -1,7 +1,7 @@
 INSERT
 
 INTO
-  poker.games
+  poker_version1.games
 
 VALUES(
   {ID},

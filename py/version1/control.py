@@ -14,7 +14,7 @@ gc.collect()
 
 # OPEN CONNECTION TO POKER DB
 
-poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
+poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version1')
 
 # GAME PARAMETERS
 

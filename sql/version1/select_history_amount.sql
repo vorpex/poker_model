@@ -2,7 +2,7 @@ SELECT
   h1.amount
 
 FROM
-  poker.history h1
+  poker_version1.history h1
 
 WHERE
   1 = 1
@@ -15,7 +15,7 @@ WHERE
     NVL(MAX(h2.nr), -1) AS max_player_nr
 
   FROM
-    poker.history h2
+    poker_version1.history h2
 
   WHERE
     1 = 1

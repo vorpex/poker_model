@@ -1,7 +1,7 @@
 INSERT
 
 INTO
-  poker.decision_points
+  poker_version1.decision_points
 
 VALUES (
   {ID},

@@ -5,7 +5,7 @@ SELECT
   p.expected_value
 
 FROM
-  poker.possible_moves p
+  poker_version1.possible_moves p
 
 WHERE
   1 = 1

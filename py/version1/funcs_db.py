@@ -16,7 +16,7 @@ def sql_delete_all(poker_db, table):
 
     TABLE = table
 
-    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
+    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version1')
     poker_cursor = poker_db.cursor()
     delete_sql_file = open(sql_path + 'delete_all.sql').read()
     delete_sql = eval(f'f"""{delete_sql_file}"""')
@@ -40,7 +40,7 @@ def sql_insert_games(poker_db, number_of_players, player0_stack, player1_stack, 
     SMALL_BLIND = small_blind
     BIG_BLIND = big_blind
 
-    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
+    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version1')
     poker_cursor = poker_db.cursor()
     select_sql_file = open(sql_path + 'games_max_id.sql').read()
     select_sql = eval(f'f"""{select_sql_file}"""')
@@ -76,7 +76,7 @@ def sql_insert_history(poker_db, phase, nr, player_name, position, stack, pot, f
     NEW_STACK = new_stack
     NEW_POT = new_pot
 
-    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
+    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version1')
     poker_cursor = poker_db.cursor()
     select_sql_file = open(sql_path + 'games_max_id.sql').read()
     select_sql = eval(f'f"""{select_sql_file}"""')
@@ -103,7 +103,7 @@ def sql_insert_decision_points(poker_db, hand, stack, pot, position, phase, nr, 
     NR = nr
     HISTORY = history
 
-    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
+    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version1')
     poker_cursor = poker_db.cursor()
     select_sql_file = open(sql_path + 'decision_points_max_id.sql').read()
     select_sql = eval(f'f"""{select_sql_file}"""')
@@ -129,7 +129,7 @@ def sql_insert_possible_moves(poker_db, move, amount, total_profit=1, played_cou
     PLAYED_COUNTER = played_counter
     EXPECTED_VALUE = expected_value
 
-    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
+    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version1')
     poker_cursor = poker_db.cursor()
     select_sql_file = open(sql_path + 'decision_points_max_id.sql').read()
     select_sql = eval(f'f"""{select_sql_file}"""')
@@ -162,7 +162,7 @@ def decision_point(poker_db, player_name, hand, stack, pot, position=2, phase=0,
     PHASE = phase
     NR = nr
 
-    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
+    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version1')
     poker_cursor = poker_db.cursor()
     select_sql_file = open(sql_path + 'games_max_id.sql').read()
     select_sql = eval(f'f"""{select_sql_file}"""')
@@ -240,7 +240,7 @@ def details_to_move(poker_db, phase, position):
     POSITION = position
     PHASE = phase
 
-    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker')
+    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version1')
     poker_cursor = poker_db.cursor()
     select_sql_file = open(sql_path + 'games_max_id.sql').read()
     select_sql = eval(f'f"""{select_sql_file}"""')
@@ -252,6 +252,7 @@ def details_to_move(poker_db, phase, position):
     select_sql_file = open(sql_path + 'select_details_to_move.sql').read()
     select_sql = eval(f'f"""{select_sql_file}"""')
     poker_cursor.execute(select_sql)
-    poker_result = poker_cursor.fetchall() 
+    poker_result = poker_cursor.fetchall()
+    # poker_db.close()
 
     return poker_result[0][0], poker_result[1][0]

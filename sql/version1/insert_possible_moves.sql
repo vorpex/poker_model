@@ -1,7 +1,7 @@
 INSERT
 
 INTO
-  poker.possible_moves
+  poker_version1.possible_moves
 
 VALUES (
   {DECISION_POINT_ID},

@@ -1,7 +1,7 @@
 DELETE
 
 FROM
-  poker_version1.{TABLE}
+  poker_version2.{TABLE}
 
 WHERE
   1 = 1

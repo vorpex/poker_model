@@ -2,7 +2,7 @@ SELECT
   h.move
 
 FROM
-  poker.history h
+  poker_version1.history h
 
 WHERE
   1 = 1

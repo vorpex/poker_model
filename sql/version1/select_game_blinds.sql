@@ -3,7 +3,7 @@ SELECT
   g.big_blind
 
 FROM
-  poker.games g
+  poker_version1.games g
 
 WHERE
   1 = 1

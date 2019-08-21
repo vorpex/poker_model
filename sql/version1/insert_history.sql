@@ -1,7 +1,7 @@
 INSERT
 
 INTO
-  poker.history
+  poker_version1.history
 
 VALUES (
   {GAME_ID},
