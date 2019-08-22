@@ -162,7 +162,7 @@ def decision_point_based_action(poker_db, phase, nr, position, stack, pot, valid
     poker_cursor.execute(select_sql)
     poker_result = poker_cursor.fetchall()
 
-    HAND_DB_FORMAT = poker_result[0][0]
+    hand_db_format = poker_result[0][0]
 
     select_sql_file = open(sql_path + 'select_decision_points.sql').read()
     select_sql = eval(f'f"""{select_sql_file}"""')
@@ -207,7 +207,7 @@ def decision_point_based_action(poker_db, phase, nr, position, stack, pot, valid
         poker_cursor.execute(select_sql)
         history = poker_cursor.fetchall()
         
-        sql_insert_decision_points(poker_db=poker_db, hand_db_format=HAND_DB_FORMAT, stack=stack, pot=pot, \
+        sql_insert_decision_points(poker_db=poker_db, hand_db_format=hand_db_format, stack=stack, pot=pot, \
                                     position=position, phase=phase, nr=nr, history=history[0][0])
         
         for move in valid_actions:
