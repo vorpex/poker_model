@@ -89,16 +89,8 @@ def sql_insert_history(poker_db, phase, nr, uuid, position, stack, pot, flop1, f
 
     return None
 
-def sql_insert_decision_points(poker_db, hand_db_format, stack, pot, position, phase, nr, history):
+def sql_insert_decision_points(poker_db, phase, nr, position, hand_db_format, stack, pot, history):
     '''insert rows into poker_version2.decision_points table'''
-
-    HAND_DB_FORMAT = hand_db_format
-    STACK = stack
-    POT = pot
-    POSITION = position
-    PHASE = phase
-    NR = nr
-    HISTORY = history
 
     # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version2')
     poker_cursor = poker_db.cursor()
@@ -107,7 +99,7 @@ def sql_insert_decision_points(poker_db, hand_db_format, stack, pot, position, p
     poker_cursor.execute(select_sql)
     poker_result = poker_cursor.fetchall()
 
-    ID = poker_result[0][0] + 1
+    index = poker_result[0][0] + 1
 
     insert_sql_file = open(sql_path + 'insert_decision_points.sql').read()
     insert_sql = eval(f'f"""{insert_sql_file}"""')
@@ -117,14 +109,8 @@ def sql_insert_decision_points(poker_db, hand_db_format, stack, pot, position, p
 
     return None
 
-def sql_insert_possible_moves(poker_db, move, amount, total_profit=1, played_counter=1, expected_value=1):
+def sql_insert_possible_moves(poker_db, action, amount, counter=1, total_profit=1, expected_value=1):
     '''insert rows into poker_version2.possible_moves table'''
-
-    MOVE = move
-    AMOUNT = amount
-    TOTAL_PROFIT = total_profit
-    PLAYED_COUNTER = played_counter
-    EXPECTED_VALUE = expected_value
 
     # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version2')
     poker_cursor = poker_db.cursor()
@@ -133,14 +119,14 @@ def sql_insert_possible_moves(poker_db, move, amount, total_profit=1, played_cou
     poker_cursor.execute(select_sql)
     poker_result = poker_cursor.fetchall()
 
-    DECISION_POINT_ID = poker_result[0][0]
+    decision_point_id = poker_result[0][0]
     
     select_sql_file = open(sql_path + 'select_possible_moves_max_id.sql').read()
     select_sql = eval(f'f"""{select_sql_file}"""')
     poker_cursor.execute(select_sql)
     poker_result = poker_cursor.fetchall()
 
-    ID = poker_result[0][0] + 1
+    index = poker_result[0][0] + 1
     
     insert_sql_file = open(sql_path + 'insert_possible_moves.sql').read()
     insert_sql = eval(f'f"""{insert_sql_file}"""')
@@ -154,7 +140,7 @@ def decision_point_based_action(poker_db, phase, nr, position, stack, pot, valid
     '''decision point calculations'''
 
     game_id = sql_games_max_id(poker_db)
-    
+
     # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version2')
     poker_cursor = poker_db.cursor()
     select_sql_file = open(sql_path + 'select_hand.sql').read()
@@ -166,7 +152,7 @@ def decision_point_based_action(poker_db, phase, nr, position, stack, pot, valid
 
     select_sql_file = open(sql_path + 'select_decision_points.sql').read()
     select_sql = eval(f'f"""{select_sql_file}"""')
-    select_sql = select_sql.replace('*', 'REPLACE(REPLACE(REPLACE(' +\
+    select_sql = select_sql.replace('s.*', 'REPLACE(REPLACE(REPLACE(' +\
         ' CONCAT(\'{\',' +\
         ' GROUP_CONCAT(s.jobj SEPARATOR \',\\' + 'n\'),' +\
         ' \'}\'), \'[\"\', \'[\'), \'\"]\', \']\'), \'\\\\\', \'\') as jobj')
@@ -174,52 +160,52 @@ def decision_point_based_action(poker_db, phase, nr, position, stack, pot, valid
     poker_result = poker_cursor.fetchall()
 
     if poker_result[0][0] != -1:
-        DECISION_POINT_ID = poker_result[0][0]
+        decision_point_id = poker_result[0][0]
 
         select_sql_file = open(sql_path + 'select_possible_moves.sql').read()
         select_sql = eval(f'f"""{select_sql_file}"""')
         poker_cursor.execute(select_sql)
-        possible_moves_list = poker_cursor.fetchall()
+        possible_actions_list = poker_cursor.fetchall()
         
-        POSSIBLE_MOVE_LIST = [[*elem] for elem in zip(*possible_moves_list)]
-
-        ID = POSSIBLE_MOVE_LIST[0]
-        MOVES = POSSIBLE_MOVE_LIST[1]
-        AMOUNT = POSSIBLE_MOVE_LIST[2]
-        EV = POSSIBLE_MOVE_LIST[3]
+        POSSIBLE_ACTIONS_LIST = [[*elem] for elem in zip(*possible_actions_list)]
+        ID = POSSIBLE_ACTIONS_LIST[0]
+        ACTION = POSSIBLE_ACTIONS_LIST[1]
+        AMOUNT = POSSIBLE_ACTIONS_LIST[2]
+        EV = POSSIBLE_ACTIONS_LIST[3]
         if min(EV) <= 0:
             EV = [elem + abs(min(EV)) + 1 for elem in EV]
         else:
             pass
         EV = [elem / sum(EV) for elem in EV]
-        final_move_id = np.random.choice(ID, p=EV)
-        final_move = MOVES[final_move_id]
-        final_move_amount = AMOUNT[final_move_id]
+        final_action_id = np.random.choice(ID, p=EV)
+        final_action = ACTION[final_action_id]
+        final_action_amount = AMOUNT[final_action_id]
 
-        return final_move, final_move_amount
+        return final_action, final_action_amount
     else:
         select_sql_file = open(sql_path + 'select_decision_points_history.sql').read()
         select_sql = eval(f'f"""{select_sql_file}"""')
-        select_sql = select_sql.replace('*', 'REPLACE(REPLACE(REPLACE(' +\
+        select_sql = select_sql.replace('s.*', 'REPLACE(REPLACE(REPLACE(' +\
             ' CONCAT(\'{\',' +\
             ' GROUP_CONCAT(s.jobj SEPARATOR \',\\' + 'n\'),' +\
             ' \'}\'), \'[\"\', \'[\'), \'\"]\', \']\'), \'\\\\\', \'\') as jobj')
         poker_cursor.execute(select_sql)
         history = poker_cursor.fetchall()
         
-        sql_insert_decision_points(poker_db=poker_db, hand_db_format=hand_db_format, stack=stack, pot=pot, \
-                                    position=position, phase=phase, nr=nr, history=history[0][0])
+        sql_insert_decision_points(poker_db=poker_db, phase=phase, nr=nr, position=position, \
+        hand_db_format=hand_db_format, stack=stack, pot=pot, history=history[0][0])
         
-        for move in valid_actions:
-            if move['action'] != 'raise':
-                sql_insert_possible_moves(poker_db, move=move['action'], amount=move['amount'])
+        for action in valid_actions:
+            if action['action'] != 'raise':
+                sql_insert_possible_moves(poker_db, action=action['action'], amount=action['amount'])
             else:
-                amount = np.random.random_integers(move['amount']['min'], move['amount']['max'])
-                sql_insert_possible_moves(poker_db, move=move['action'], amount=amount)
+                amount = np.random.random_integers(action['amount']['min'], action['amount']['max'])
+                sql_insert_possible_moves(poker_db, action=action['action'], amount=amount)
 
     # poker_db.close()
 
-        return decision_point_based_action(poker_db, phase, nr, pot, position, stack, valid_actions)
+        return decision_point_based_action(poker_db=poker_db, phase=phase, nr=nr, position=position, pot=pot, \
+        stack=stack, valid_actions=valid_actions)
 
 def sql_update_games_cards(poker_db, index, uuid, card1, card2, hand_db_format):
     '''update card info in poker_version2.games table'''

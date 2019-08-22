@@ -1,6 +1,6 @@
 SELECT
   p.id,
-  p.move,
+  p.action,
   p.amount,
   p.expected_value
 
@@ -9,4 +9,4 @@ FROM
 
 WHERE
   1 = 1
-  AND p.decision_point_id = {DECISION_POINT_ID}
+  AND p.decision_point_id = {decision_point_id}

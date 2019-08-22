@@ -39,7 +39,7 @@ WHERE
     UNION
     SELECT CONCAT('"river":', json_array(GROUP_CONCAT(CONCAT('"', h.river, '"')))) AS jobj FROM poker_version2.history h WHERE 1 = 1 AND h.game_id = {game_id} AND h.nr < {nr}
     UNION
-    SELECT CONCAT('"move":', json_array(GROUP_CONCAT(CONCAT('"', h.move, '"')))) AS jobj FROM poker_version2.history h WHERE 1 = 1 AND h.game_id = {game_id} AND h.nr < {nr}
+    SELECT CONCAT('"move":', json_array(GROUP_CONCAT(CONCAT('"', h.action, '"')))) AS jobj FROM poker_version2.history h WHERE 1 = 1 AND h.game_id = {game_id} AND h.nr < {nr}
     UNION
     SELECT CONCAT('"amount":', json_array(GROUP_CONCAT(h.amount))) AS jobj FROM poker_version2.history h WHERE 1 = 1 AND h.game_id = {game_id} AND h.nr < {nr}
   
