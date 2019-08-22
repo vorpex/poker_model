@@ -170,7 +170,7 @@ def decision_point(poker_db, player_name, hand, stack, pot, position=2, phase=0,
     max_id = poker_cursor.fetchall()
 
     GAME_ID = max_id[0][0]
-    select_sql_file = open(sql_path + 'select_decision_points.sql').read()    
+    select_sql_file = open(sql_path + 'select_decision_points.sql').read()
     select_sql = eval(f'f"""{select_sql_file}"""')
     select_sql = select_sql.replace('*', 'REPLACE(REPLACE(REPLACE(' +\
         ' CONCAT(\'{\',' +\
