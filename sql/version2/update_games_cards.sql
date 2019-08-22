@@ -2,11 +2,11 @@ UPDATE
   poker_version2.games g
 
 SET
-  g.card1 = '{CARD1}',
-  g.card2 = '{CARD2}',
-  g.hand_db_format = '{HAND_DB_FORMAT}'
+  g.card1 = '{card1}',
+  g.card2 = '{card2}',
+  g.hand_db_format = '{hand_db_format}'
 
 WHERE
   1 = 1
-  AND g.id = {ID}
-  AND g.player = '{PLAYER}'
+  AND g.id = {index}
+  AND g.uuid = '{uuid}'

@@ -6,5 +6,5 @@ FROM
 
 WHERE
   1 = 1
-  AND g.id = {GAME_ID}
-  AND g.position = {POSITION}
+  AND g.id = {game_id}
+  AND g.position = {position}

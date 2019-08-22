@@ -4,20 +4,20 @@ INTO
   poker_version2.history
 
 VALUES (
-  {GAME_ID},
-  '{PHASE}',
-  {NR},
-  '{PLAYER}',
-  {POSITION},
-  {STACK},
-  {POT},
-  '{FLOP1}',
-  '{FLOP2}',
-  '{FLOP3}',
-  '{TURN}',
-  '{RIVER}',
-  '{MOVE}',
-  {AMOUNT},
-  {NEW_STACK},
-  {NEW_POT}
+  {game_id},
+  '{phase}',
+  {nr},
+  '{uuid}',
+  {position},
+  {stack},
+  {pot},
+  '{flop1}',
+  '{flop2}',
+  '{flop3}',
+  '{turn}',
+  '{river}',
+  '{action}',
+  {amount},
+  {new_stack},
+  {new_pot}
 )
