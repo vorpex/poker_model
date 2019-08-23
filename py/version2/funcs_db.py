@@ -47,7 +47,7 @@ def sql_games_max_id(poker_db):
     return poker_result[0][0]
 
 def sql_insert_games(poker_db, index, player_num, small_blind_amount, ante_amount, uuid, name, stack, position, \
-    card1, card2, hand_db_format):
+    card1, card2, hand_db_format, flop1, flop2, flop3, turn, river):
     '''insert rows into poker_version2.games table'''
 
     if position == 1:
@@ -85,6 +85,9 @@ def sql_insert_history(poker_db, phase, nr, uuid, position, stack, pot, flop1, f
     insert_sql = eval(f'f"""{insert_sql_file}"""')
     poker_cursor.execute(insert_sql)
     poker_cursor.execute('COMMIT')
+
+    sql_update_games_board(poker_db=poker_db, game_id=game_id, flop1=flop1, flop2=flop2, flop3=flop3, \
+    turn=turn, river=river)
     # poker_db.close()
 
     return None
@@ -219,3 +222,48 @@ def sql_update_games_cards(poker_db, index, uuid, card1, card2, hand_db_format):
     # poker_db.close()
 
     return None
+
+def sql_update_games_board(poker_db, game_id, flop1, flop2, flop3, turn, river):
+    '''update card info in poker_version2.games table'''
+
+    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version2')
+    poker_cursor = poker_db.cursor()
+    update_sql_file = open(sql_path + 'update_games_board.sql').read()
+    update_sql = eval(f'f"""{update_sql_file}"""')
+    poker_cursor.execute(update_sql)
+    poker_cursor.execute('COMMIT')
+    # poker_db.close()
+
+    return None
+
+def valid_actions_check(actions):
+    '''function to check and return truly valid actions'''
+
+    # valid_actions
+
+    return None
+
+def community_cards_eval(board):
+    '''function to evaluate community cards'''
+
+    if board == []:
+        final_board = ['', '', '', '', '']
+    elif board != [] and len(board) == 3:
+        board.sort()
+        for i in range(2):
+            board.append('')
+        final_board = board
+    elif board != [] and len(board) == 4:
+        final_board = board[:3]
+        final_board.sort()
+        final_board.append(board[3])
+        final_board.append('')
+    elif board != [] and len(board) == 5:
+        final_board = board[:3]
+        final_board.sort()
+        for i in range(3, 5):
+            final_board.append(board[i])
+    else:
+        pass
+
+    return final_board
