@@ -177,8 +177,7 @@ def decision_point_based_action(poker_db, phase, nr, position, stack, pot, valid
         EV = POSSIBLE_ACTIONS_LIST[3]
         if min(EV) <= 0:
             EV = [elem + abs(min(EV)) + 1 for elem in EV]
-        else:
-            pass
+
         EV = [elem / sum(EV) for elem in EV]
         final_action_id = np.random.choice(ID, p=EV)
         final_action = ACTION[final_action_id]
@@ -236,13 +235,6 @@ def sql_update_games_board(poker_db, game_id, flop1, flop2, flop3, turn, river):
 
     return None
 
-def valid_actions_check(actions):
-    '''function to check and return truly valid actions'''
-
-    # valid_actions
-
-    return None
-
 def community_cards_eval(board):
     '''function to evaluate community cards'''
 
@@ -267,3 +259,49 @@ def community_cards_eval(board):
         pass
 
     return final_board
+
+def valid_actions_check(actions, stack):
+    '''function to check and return truly valid actions'''
+
+    fold_actions = fold_check(actions=actions, stack=stack)
+    call_actions = call_check(actions=fold_actions, stack=stack)
+    final_actions = raise_check(actions=call_actions, stack=stack)
+
+    return final_actions
+
+def fold_check(actions, stack):
+    '''check fold action'''
+
+    for action in actions:
+
+        if action['action'] == 'call' and action['amount'] == 0:
+            remove_fold_flag = 1
+        else:
+            remove_fold_flag = 0
+    
+    fold_actions = []
+    for action in actions:
+
+        if action['action'] == 'fold' and remove_fold_flag == 1:
+            pass
+        else:
+            fold_actions.append(action)
+
+    return fold_actions
+
+def call_check(actions, stack):
+    '''check fold action'''
+
+    for action in actions:
+
+        if action['action'] == 'call' and action['amount'] > stack:
+            action['amount'] = stack
+
+    call_actions = actions
+
+    return call_actions
+
+def raise_check(actions, stack):
+    '''check fold action'''
+
+    return 0
