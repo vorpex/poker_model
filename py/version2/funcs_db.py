@@ -199,7 +199,7 @@ def decision_point_based_action(poker_db, phase, nr, position, stack, pot, valid
             if action['action'] != 'raise':
                 sql_insert_possible_moves(poker_db, action=action['action'], amount=action['amount'])
             else:
-                amount = np.random.random_integers(action['amount']['min'], action['amount']['max'])
+                amount = np.random.randint(action['amount']['min'], action['amount']['max'] + 1)
                 sql_insert_possible_moves(poker_db, action=action['action'], amount=amount)
 
     # poker_db.close()
