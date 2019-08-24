@@ -20,6 +20,7 @@ VALUES(
   '{flop2}',
   '{flop3}',
   '{turn}',
-  '{river}'
+  '{river}',
+  {final_stack}
 
 )

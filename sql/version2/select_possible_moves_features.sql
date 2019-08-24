@@ -1,8 +1,6 @@
 SELECT
-  p.id,
-  p.action,
-  p.bet_amount,
-  p.expected_value
+  p.counter,
+  p.total_profit
 
 FROM
   poker_version2.possible_moves p
@@ -10,6 +8,4 @@ FROM
 WHERE
   1 = 1
   AND p.decision_point_id = {decision_point_id}
-
-ORDER BY
-  p.id
+  AND p.action = '{action}'

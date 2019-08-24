@@ -10,4 +10,4 @@ SET
 
 WHERE
   1 = 1
-  AND g.id = {game_id}
+  AND g.id = {index}
