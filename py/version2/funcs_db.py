@@ -306,7 +306,7 @@ def raise_check(actions, stack):
 
     for action in actions:
 
-        if action['action'] == 'raise' and action['amount']['min'] == -1:
+        if action['action'] == 'raise' and action['amount']['min'] == -1 and action['action']['max'] == -1:
             action['amount']['min'] = stack
             action['amount']['max'] = stack
     
