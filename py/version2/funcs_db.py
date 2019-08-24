@@ -304,4 +304,12 @@ def call_check(actions, stack):
 def raise_check(actions, stack):
     '''check fold action'''
 
-    return 0
+    for action in actions:
+
+        if action['action'] == 'raise' and action['amount']['min'] == -1:
+            action['amount']['min'] = stack
+            action['amount']['max'] = stack
+    
+    raise_actions = actions
+
+    return raise_actions
