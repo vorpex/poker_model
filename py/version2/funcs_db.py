@@ -99,7 +99,7 @@ def sql_possible_moves_features(poker_db, decision_point_id, action):
     poker_result = poker_cursor.fetchall()
     # poker_db.close()
 
-    return poker_result[0][0], poker_result[1][0]
+    return poker_result[0][0], poker_result[0][1]
 
 def sql_insert_games(poker_db, index, player_num, small_blind_amount, ante_amount, uuid, name, stack, position, \
     card1, card2, hand_db_format, flop1, flop2, flop3, turn, river, final_stack):
@@ -296,7 +296,7 @@ def sql_update_possible_moves(poker_db, position, decision_point_id, action):
     counter, total_profit = sql_possible_moves_features(poker_db=poker_db, \
     decision_point_id = decision_point_id, action=action)
 
-    if counter == 1:
+    if counter == 1 and total_profit == 1:
         total_profit = result
     else:
         counter = counter + 1

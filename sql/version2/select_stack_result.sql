@@ -1,5 +1,5 @@
 SELECT
-  g.stack - g.final_stack AS stack_result
+  g.final_stack - g.stack AS stack_result
 
 FROM
   poker_version2.games g
