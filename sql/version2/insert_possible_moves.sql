@@ -7,7 +7,7 @@ VALUES (
   {decision_point_id},
   {index},
   '{action}',
-  {amount},
+  {bet_amount},
   {counter},
   {total_profit},
   {expected_value}

@@ -112,7 +112,7 @@ def sql_insert_decision_points(poker_db, phase, nr, position, hand_db_format, st
 
     return None
 
-def sql_insert_possible_moves(poker_db, action, amount, counter=1, total_profit=1, expected_value=1):
+def sql_insert_possible_moves(poker_db, action, bet_amount, counter=1, total_profit=1, expected_value=1):
     '''insert rows into poker_version2.possible_moves table'''
 
     # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version2')
@@ -173,7 +173,7 @@ def decision_point_based_action(poker_db, phase, nr, position, stack, pot, valid
         POSSIBLE_ACTIONS_LIST = [[*elem] for elem in zip(*possible_actions_list)]
         ID = POSSIBLE_ACTIONS_LIST[0]
         ACTION = POSSIBLE_ACTIONS_LIST[1]
-        AMOUNT = POSSIBLE_ACTIONS_LIST[2]
+        BET_AMOUNT = POSSIBLE_ACTIONS_LIST[2]
         EV = POSSIBLE_ACTIONS_LIST[3]
         if min(EV) <= 0:
             EV = [elem + abs(min(EV)) + 1 for elem in EV]
@@ -181,7 +181,7 @@ def decision_point_based_action(poker_db, phase, nr, position, stack, pot, valid
         EV = [elem / sum(EV) for elem in EV]
         final_action_id = np.random.choice(ID, p=EV)
         final_action = ACTION[final_action_id]
-        final_action_amount = AMOUNT[final_action_id]
+        final_action_amount = BET_AMOUNT[final_action_id]
 
         return final_action, final_action_amount
     else:
@@ -199,10 +199,10 @@ def decision_point_based_action(poker_db, phase, nr, position, stack, pot, valid
         
         for action in valid_actions:
             if action['action'] != 'raise':
-                sql_insert_possible_moves(poker_db, action=action['action'], amount=action['amount'])
+                sql_insert_possible_moves(poker_db, action=action['action'], bet_amount=action['amount'])
             else:
-                amount = np.random.randint(action['amount']['min'], action['amount']['max'] + 1)
-                sql_insert_possible_moves(poker_db, action=action['action'], amount=amount)
+                # amount = np.random.randint(action['amount']['min'], action['amount']['max'] + 1)
+                sql_insert_possible_moves(poker_db, action=action['action'], bet_amount=action['amount']['min'])
 
     # poker_db.close()
 
@@ -260,21 +260,23 @@ def community_cards_eval(board):
 
     return final_board
 
-def valid_actions_check(actions, stack):
+def valid_actions_check(actions, phase, position, stack, small_blind_amount):
     '''function to check and return truly valid actions'''
 
-    fold_actions = fold_check(actions=actions, stack=stack)
+    fold_actions = fold_check(actions=actions, phase=phase, position=position, \
+    small_blind_amount=small_blind_amount)
     call_actions = call_check(actions=fold_actions, stack=stack)
     final_actions = raise_check(actions=call_actions, stack=stack)
 
     return final_actions
 
-def fold_check(actions, stack):
+def fold_check(actions, phase, position, small_blind_amount):
     '''check fold action'''
 
     for action in actions:
 
-        if action['action'] == 'call' and action['amount'] == 0:
+        if action['action'] == 'call' and (action['amount'] == 0 or (action['amount'] == small_blind_amount * 2 \
+        and phase == 'preflop' and position == 2)):
             remove_fold_flag = 1
         else:
             remove_fold_flag = 0
@@ -306,7 +308,7 @@ def raise_check(actions, stack):
 
     for action in actions:
 
-        if action['action'] == 'raise' and action['amount']['min'] == -1 and action['action']['max'] == -1:
+        if action['action'] == 'raise' and action['amount']['min'] == -1 and action['amount']['max'] == -1:
             action['amount']['min'] = stack
             action['amount']['max'] = stack
     
