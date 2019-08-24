@@ -7,6 +7,7 @@ VALUES (
   {game_id},
   '{phase}',
   {nr},
+  {step},
   '{uuid}',
   {position},
   {stack},

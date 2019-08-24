@@ -128,7 +128,7 @@ def sql_insert_games(poker_db, index, player_num, small_blind_amount, ante_amoun
 
     return None
 
-def sql_insert_history(poker_db, phase, nr, uuid, position, stack, pot, flop1, flop2, flop3, turn, river, \
+def sql_insert_history(poker_db, phase, nr, step, uuid, position, stack, pot, flop1, flop2, flop3, turn, river, \
     action, amount, new_stack, new_pot):
     '''insert rows into poker_version2.games table'''
 
@@ -148,7 +148,7 @@ def sql_insert_history(poker_db, phase, nr, uuid, position, stack, pot, flop1, f
     return None
 
 def sql_insert_decision_points(poker_db, phase, nr, position, hand_db_format, stack, pot, \
-flop1, flop2, flop3, turn, river, history):
+    flop1, flop2, flop3, turn, river, history):
     '''insert rows into poker_version2.decision_points table'''
 
     index = sql_decision_points_max_id(poker_db=poker_db) + 1
@@ -179,8 +179,8 @@ def sql_insert_possible_moves(poker_db, action, bet_amount, counter=1, total_pro
 
     return None
 
-def decision_point_based_action(poker_db, phase, nr, position, stack, pot, \
-flop1, flop2, flop3, turn, river, valid_actions):
+def decision_point_based_action(poker_db, phase, nr, step, position, stack, pot, \
+    flop1, flop2, flop3, turn, river, valid_actions):
     '''decision point calculations'''
 
     game_id = sql_games_max_id(poker_db)
@@ -250,8 +250,9 @@ flop1, flop2, flop3, turn, river, valid_actions):
 
     # poker_db.close()
 
-        return decision_point_based_action(poker_db=poker_db, phase=phase, nr=nr, position=position, pot=pot, \
-        stack=stack, flop1=flop1, flop2=flop2, flop3=flop3, turn=turn, river=river, valid_actions=valid_actions)
+        return decision_point_based_action(poker_db=poker_db, phase=phase, nr=nr, step=step, position=position, \
+        pot=pot, stack=stack, flop1=flop1, flop2=flop2, flop3=flop3, turn=turn, river=river, \
+        valid_actions=valid_actions)
 
 def sql_update_games_cards(poker_db, index, uuid, card1, card2, hand_db_format):
     '''update card info in poker_version2.games table'''
