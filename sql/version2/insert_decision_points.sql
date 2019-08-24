@@ -11,5 +11,10 @@ VALUES (
   '{hand_db_format}',
   {stack},
   {pot},
+  '{flop1}',
+  '{flop2}',
+  '{flop3}',
+  '{turn}',
+  '{river}',
   '{history}'
 )

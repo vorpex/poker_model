@@ -147,7 +147,8 @@ def sql_insert_history(poker_db, phase, nr, uuid, position, stack, pot, flop1, f
 
     return None
 
-def sql_insert_decision_points(poker_db, phase, nr, position, hand_db_format, stack, pot, history):
+def sql_insert_decision_points(poker_db, phase, nr, position, hand_db_format, stack, pot, \
+flop1, flop2, flop3, turn, river, history):
     '''insert rows into poker_version2.decision_points table'''
 
     index = sql_decision_points_max_id(poker_db=poker_db) + 1
@@ -178,7 +179,8 @@ def sql_insert_possible_moves(poker_db, action, bet_amount, counter=1, total_pro
 
     return None
 
-def decision_point_based_action(poker_db, phase, nr, position, stack, pot, valid_actions):
+def decision_point_based_action(poker_db, phase, nr, position, stack, pot, \
+flop1, flop2, flop3, turn, river, valid_actions):
     '''decision point calculations'''
 
     game_id = sql_games_max_id(poker_db)
@@ -236,7 +238,8 @@ def decision_point_based_action(poker_db, phase, nr, position, stack, pot, valid
         history = poker_cursor.fetchall()
         
         sql_insert_decision_points(poker_db=poker_db, phase=phase, nr=nr, position=position, \
-        hand_db_format=hand_db_format, stack=stack, pot=pot, history=history[0][0])
+        hand_db_format=hand_db_format, stack=stack, pot=pot, flop1=flop1, flop2=flop2, flop3=flop3, \
+        turn=turn, river=river, history=history[0][0])
         
         for action in valid_actions:
             if action['action'] != 'raise':
@@ -248,7 +251,7 @@ def decision_point_based_action(poker_db, phase, nr, position, stack, pot, valid
     # poker_db.close()
 
         return decision_point_based_action(poker_db=poker_db, phase=phase, nr=nr, position=position, pot=pot, \
-        stack=stack, valid_actions=valid_actions)
+        stack=stack, flop1=flop1, flop2=flop2, flop3=flop3, turn=turn, river=river, valid_actions=valid_actions)
 
 def sql_update_games_cards(poker_db, index, uuid, card1, card2, hand_db_format):
     '''update card info in poker_version2.games table'''
@@ -294,7 +297,7 @@ def sql_update_possible_moves(poker_db, position, decision_point_id, action):
 
     result = sql_stack_result(poker_db=poker_db, position=position)
     counter, total_profit = sql_possible_moves_features(poker_db=poker_db, \
-    decision_point_id = decision_point_id, action=action)
+    decision_point_id=decision_point_id, action=action)
 
     if counter == 1 and total_profit == 1:
         total_profit = result
