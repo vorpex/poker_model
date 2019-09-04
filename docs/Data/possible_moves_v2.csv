@@ -1,0 +1,8 @@
+decision_point_id;id;action;bet_amount_rate;counter;total_profit;expected_value
+0;0;fold;0;1;0;0
+0;1;call;1;1;1;1
+0;2;raise;1-1,3;1;1;1
+;;raise;1,3-1,5;;;
+;;raise;1,5-1,75;;;
+;;raise;1,75-2;;;
+;;raise;allin;;;

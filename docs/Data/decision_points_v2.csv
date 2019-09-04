@@ -1,0 +1,22 @@
+id;phase;nr;action_nr;position;small_blind_amount;card1;card2;hand_value;stack_by_sb;pot_by_sb;flop1;flop2;flop3;turn;river;History_ID
+0;preflop;2;1;3;10;2D;7H;High card;200-;0-3;;;;;;1
+1;preflop;3;1;4;10;8C;QD;One Pair;150-200;3-6;;;;;;2
+2;preflop;4;1;5;10;4C;JD;Two pair;100-150;6-10;;;;;;3
+3;preflop;5;1;0;10;QH;TS;Three of kind;50-75;10-15;;;;;;4
+4;preflop;6;1;1;10;QC;TC;Straight;25-50;15-20;;;;;;5
+;;;;;10;3H;JS;Flush;0-25;20-30;;;;;;
+;;;;;;;;Full House;;30-50;;;;;;
+;;;;;;;;Four of kind;;50-80;;;;;;
+;;;;;;;;Straight Flush;;80-120;;;;;;
+;;;;;;;;Royal Flush;;120-160;;;;;;
+;;;;;;;;;;160-200;;;;;;
+;;;;;;;;;;200-;;;;;;
+;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
