@@ -2,6 +2,16 @@
 
 # pylint: disable=E1101, E1601, W0612
 
+# Instead of:
+# select_sql_file = open(sql_path + 'select_games_max_id.sql').read()
+# select_sql = eval(f'f"""{select_sql_file}"""')
+#
+# Use:
+# select_sql_file = open(sql_path + 'select_games_max_id.sql')
+# select_sql = select_sql_file.read()
+# select_sql = eval(f'f"""{select_sql_file}"""')
+# select_sql_file.close()
+
 import numpy as np
 
 sql_path = 'c:\\Users\\adam.sohonyai\\Documents\\GitHub\\poker_model\\sql\\version3\\'
