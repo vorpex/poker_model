@@ -134,8 +134,8 @@ def sql_possible_moves_features(poker_db, decision_point_id, action):
 
     return poker_result[0][0], poker_result[0][1]
 
-def sql_insert_games(database, poker_db, index, player_num, small_blind_amount, ante_amount,\
-    uuid, name, stack, position, card1, card2, hand_db_format, flop1, flop2, flop3, turn,\
+def sql_insert_games(poker_db, database, index, player_num, small_blind_amount, ante_amount,\
+    uuid, name, stack, position, card1, card2, hand_db_format, flop1, flop2,flop3, turn,\
     river, final_stack):
     '''insert rows into games table'''
 
@@ -155,7 +155,7 @@ def sql_insert_games(database, poker_db, index, player_num, small_blind_amount, 
     insert_sql_file = open(sql_path + 'insert_games.sql')
     insert_sql = insert_sql_file.read()
     insert_sql = eval(f'f"""{insert_sql}"""')
-
+    
     # poker_db = mysql.connector.connect(user=settings['sql_user'],\
     #                                    host=settings['sql_host'],\
     #                                    database=settings['sql_database'])
@@ -168,22 +168,29 @@ def sql_insert_games(database, poker_db, index, player_num, small_blind_amount, 
 
     return None
 
-def sql_insert_history(poker_db, phase, nr, step, uuid, position, stack, pot, flop1, flop2, flop3, turn, river, \
-    action, amount, new_stack, new_pot):
-    '''insert rows into poker_version3.games table'''
+def sql_insert_history(poker_db, database, phase, nr, step, uuid, position, stack, stack_range,\
+    pot, pot_range, flop1, flop2, flop3, turn, river, action, amount, amount_range,\
+    new_stack, new_stack_range, new_pot, new_pot_range):
+    '''insert rows into games table'''
 
-    game_id = sql_games_max_id(poker_db=poker_db)
+    game_id = sql_games_max_id(poker_db=poker_db, database=database)
 
-    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version3')
+    insert_sql_file = open(sql_path + 'insert_history.sql')
+    insert_sql = insert_sql_file.read()
+    insert_sql = eval(f'f"""{insert_sql}"""')
+
+    # poker_db = mysql.connector.connect(user=settings['sql_user'],\
+    #                                    host=settings['sql_host'],\
+    #                                    database=settings['sql_database'])
     poker_cursor = poker_db.cursor()
-    insert_sql_file = open(sql_path + 'insert_history.sql').read()
-    insert_sql = eval(f'f"""{insert_sql_file}"""')
     poker_cursor.execute(insert_sql)
     poker_cursor.execute('COMMIT')
 
-    sql_update_games_board(poker_db=poker_db, index=game_id, flop1=flop1, flop2=flop2, flop3=flop3, \
-    turn=turn, river=river)
+    sql_update_games_board(poker_db=poker_db, database=database, index=game_id,\
+        flop1=flop1, flop2=flop2, flop3=flop3, turn=turn, river=river)
     # poker_db.close()
+
+    insert_sql_file.close()
 
     return None
 
@@ -294,29 +301,41 @@ def decision_point_based_action(poker_db, phase, nr, step, position, stack, pot,
         pot=pot, stack=stack, flop1=flop1, flop2=flop2, flop3=flop3, turn=turn, river=river, \
         valid_actions=valid_actions)
 
-def sql_update_games_cards(poker_db, index, uuid, card1, card2, hand_db_format):
-    '''update card info in poker_version3.games table'''
+def sql_update_games_cards(poker_db, database, index, uuid, card1, card2, hand_db_format):
+    '''update card info in games table'''
 
-    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version3')
+    update_sql_file = open(sql_path + 'update_games_cards.sql')
+    update_sql = update_sql_file.read()
+    update_sql = eval(f'f"""{update_sql}"""')
+
+    # poker_db = mysql.connector.connect(user=settings['sql_user'],\
+    #                                    host=settings['sql_host'],\
+    #                                    database=settings['sql_database'])
     poker_cursor = poker_db.cursor()
-    update_sql_file = open(sql_path + 'update_games_cards.sql').read()
-    update_sql = eval(f'f"""{update_sql_file}"""')
     poker_cursor.execute(update_sql)
     poker_cursor.execute('COMMIT')
     # poker_db.close()
+
+    update_sql_file.close()
 
     return None
 
-def sql_update_games_board(poker_db, index, flop1, flop2, flop3, turn, river):
-    '''update card info in poker_version3.games table'''
+def sql_update_games_board(poker_db, database, index, flop1, flop2, flop3, turn, river):
+    '''update card info in games table'''
 
-    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version3')
+    update_sql_file = open(sql_path + 'update_games_board.sql')
+    update_sql = update_sql_file.read()
+    update_sql = eval(f'f"""{update_sql}"""')
+
+    # poker_db = mysql.connector.connect(user=settings['sql_user'],\
+    #                                    host=settings['sql_host'],\
+    #                                    database=settings['sql_database'])
     poker_cursor = poker_db.cursor()
-    update_sql_file = open(sql_path + 'update_games_board.sql').read()
-    update_sql = eval(f'f"""{update_sql_file}"""')
     poker_cursor.execute(update_sql)
     poker_cursor.execute('COMMIT')
     # poker_db.close()
+
+    update_sql_file.close()
 
     return None
 

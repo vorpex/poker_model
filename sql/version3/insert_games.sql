@@ -22,5 +22,4 @@ VALUES(
   '{turn}',
   '{river}',
   {final_stack}
-
 )
