@@ -1,9 +1,12 @@
 {
     "ante_amount": 0,
     "max_round": 1,
+    "nr": 0,
     "player_num": 6,
+    "pot": 0,
     "small_blind_amount": 10,
     "stack": 2000,
+    "step": 0,
     "sql_database": "poker_version3",
     "sql_host": "127.0.0.1",
     "sql_path": "../../sql/version3/",

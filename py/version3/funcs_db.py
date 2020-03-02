@@ -169,7 +169,7 @@ def sql_insert_games(poker_db, database, index, player_num, small_blind_amount, 
     return None
 
 def sql_insert_history(poker_db, database, phase, nr, step, uuid, position, stack, stack_range,\
-    pot, pot_range, flop1, flop2, flop3, turn, river, action, amount, amount_range,\
+    pot, pot_range, flop1, flop2, flop3, turn, river, action, amount, amount_potrate,\
     new_stack, new_stack_range, new_pot, new_pot_range):
     '''insert rows into games table'''
 
@@ -473,3 +473,48 @@ def summarize(poker_db, final_stacks, summary):
         decision_point_id=decision['decision_point_id'], action=decision['action'])
 
     return None
+
+def range_stack(stack, small_blind_amount):
+    '''create ranges from stack'''
+
+    stack = stack / small_blind_amount
+    if stack >= 200:
+        rng = '200+'
+    else:
+        rng = str(int(stack / 25) * 25) + '-' + str((int(stack / 25) + 1) * 25)
+    
+    return rng
+
+def range_pot(pot, small_blind_amount):
+    '''create ranges from spot'''
+
+    pot = pot /small_blind_amount
+    if pot < 50:
+        rng = str(int(pot / 5) * 5) + '-' + str((int(pot / 5) + 1) * 5)
+    elif pot >= 50 and pot < 100:
+        rng = str(int(pot / 10) * 10) + '-' + str((int(pot / 10) + 1) * 10)
+    elif pot >= 100 and pot < 200:
+        rng = str(int(pot / 20) * 20) + '-' + str((int(pot / 20) + 1) * 20)
+    else:
+        rng = '200+'
+    
+    return rng
+
+def range_potrate(amount, pot, action):
+    '''create ranges from action amount'''
+
+    if pot != 0:
+        rate = amount / pot
+
+    if action == 'CALL':
+        rng = '1'
+    elif action != 'CALL' and pot == 0:
+        rng = '3+'
+    elif action != 'CALL' and pot != 0 and rate < 2:
+        rng = str(int(pot / 0.2) * 0.2) + '-' + str((int(pot / 0.2) + 1) * 0.2)
+    elif action != 'CALL' and pot != 0 and rate >= 2 and rate < 3:
+        rng = str(int(pot / 0.5) * 0.5) + '-' + str((int(pot / 0.5) + 1) * 0.5)
+    else:
+        rng = '3+'
+    
+    return rng
