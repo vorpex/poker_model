@@ -9,12 +9,9 @@ VALUES (
   {nr},
   {position},
   '{hand_db_format}',
-  {stack},
-  {pot},
-  '{flop1}',
-  '{flop2}',
-  '{flop3}',
-  '{turn}',
-  '{river}',
+  {hand_strength},
+  {improv_rate},
+  {stack_range},
+  {pot_range},
   '{history}'
 )
