@@ -10,7 +10,7 @@ WHERE
   AND d.nr = {nr}
   AND d.position = {position}
   AND d.hand_db_format = '{hand_db_format}'
-  AND d.hand_strenght = {hand_strength}
+  AND d.hand_strength = {hand_strength}
   AND d.improv_rate = '{improv_rate}'
   AND d.stack_range = '{stack_range}'
   AND d.pot_range = '{pot_range}'

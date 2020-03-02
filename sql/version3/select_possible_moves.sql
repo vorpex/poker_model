@@ -1,7 +1,7 @@
 SELECT
   p.id,
   p.action,
-  p.bet_amount,
+  p.bet_amount_range,
   p.expected_value
 
 FROM
