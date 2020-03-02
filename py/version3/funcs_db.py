@@ -499,8 +499,10 @@ def range_pot(pot, small_blind_amount):
         rng = str(int(pot / 10) * 10) + '-' + str((int(pot / 10) + 1) * 10)
     elif pot >= 100 and pot < 200:
         rng = str(int(pot / 20) * 20) + '-' + str((int(pot / 20) + 1) * 20)
+    elif pot >= 200 and pot < 1000:
+        rng = str(int(pot / 50) * 50) + '-' + str((int(pot / 50) + 1) * 50)
     else:
-        rng = '200+'
+        rng = '1000+'
     
     return rng
 
@@ -513,9 +515,11 @@ def range_potrate(amount, pot, action):
     if action == 'CALL' or (action != 'CALL' and pot == 0):
         rng = '1'
     elif action != 'CALL' and pot != 0 and rate < 2:
-        rng = str(int(rate / 0.2) * 0.2) + '-' + str((int(rate / 0.2) + 1) * 0.2)
+        rng = str(round(int(rate / 0.2) * 0.2), 1) + '-' +\
+            str(round((int(rate / 0.2) + 1) * 0.2), 1)
     elif action != 'CALL' and pot != 0 and rate >= 2 and rate < 3:
-        rng = str(int(rate / 0.5) * 0.5) + '-' + str((int(rate / 0.5) + 1) * 0.5)
+        rng = str(round(int(rate / 0.5) * 0.5), 1) + '-' +\
+            str(round((int(rate / 0.5) + 1) * 0.5), 1)
     else:
         rng = '3+'
     
