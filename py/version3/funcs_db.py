@@ -1,13 +1,22 @@
 '''database functions'''
 
-# pylint: disable=E1101, E1601, W0612
+# pylint: disable=E0401, E1101, E1601, W0612
 
 import json
 import numpy as np
+import sys
 
 json_data = open(file='./settings.json', mode='r')
 settings = json.load(json_data)
 json_data.close()
+
+sys.path.append(settings['deuces_path'])
+sys.path.append(settings['holdem_calc_path'])
+
+import deuces
+from deuces import Evaluator as de
+import holdem_calc
+import parallel_holdem_calc
 
 sql_path = settings['sql_path']
 
@@ -207,8 +216,8 @@ def sql_insert_history(poker_db, database, phase, nr, step, uuid, position, stac
 
     return None
 
-def sql_insert_decision_points(poker_db, database, phase, nr, position, hand_db_format, stack, pot,\
-    flop1, flop2, flop3, turn, river, history):
+def sql_insert_decision_points(poker_db, database, phase, nr, position, hand_db_format,\
+    hand_strength, improv_rate, stack_range, pot_range, history):
     '''insert rows into decision_points table'''
 
     index = sql_decision_points_max_id(poker_db=poker_db, database=database) + 1
@@ -271,8 +280,48 @@ def decision_point_based_action(poker_db, database, phase, nr, step, position, s
     poker_result = poker_cursor.fetchall()
 
     hand_db_format = poker_result[0][0]
+    
+    if phase == 'preflop':
+        hand_strength = 0
+        improv_rate = dict()
+    else:
+        board_hs = []
+        board_ir = []
+        if flop1 != '':
+            flop1_new = flop1[1:] + flop1[:1].lower()
+            board_hs.append(deuces.Card.new(flop1_new))
+            board_ir.append(flop1_new)
+        if flop2 != '':
+            flop2_new = flop2[1:] + flop2[:1].lower()
+            board_hs.append(deuces.Card.new(flop2_new))
+            board_ir.append(flop2_new)
+        if flop3 != '':
+            flop3_new = flop3[1:] + flop3[:1].lower()
+            board_hs.append(deuces.Card.new(flop3_new))
+            board_ir.append(flop3_new)
+        if turn != '':
+            turn_new = turn[1:] + turn[:1].lower()
+            board_hs.append(deuces.Card.new(turn_new))
+            board_ir.append(turn_new)
+        if river != '':
+            river_new = river[1:] + river[:1].lower()
+            board_hs.append(deuces.Card.new(river_new))
+            board_ir.append(river_new)
+        
+        crd1 = poker_result[0][1].replace(poker_result[0][1][-1:], poker_result[0][1][-1:].lower())
+        crd2 = poker_result[0][2].replace(poker_result[0][2][-1:], poker_result[0][2][-1:].lower())
+        hand_hs = [deuces.Card.new(crd1), deuces.Card.new(crd2)]
+        hand_ir = [crd1, crd2]
+        
+        hand_strength = de().evaluate(board_hs, hand_hs)
+        improv_rate = holdem_calc.calculate(board_ir, False, 1, None, hand_ir, True)[1]
+        for key in improv_rate.keys():
+            improv_rate[key] = round(improv_rate[key], 4)
 
     select_sql_file.close()
+
+    stack_range = range_stack(stack=stack, small_blind_amount=settings['small_blind_amount'])
+    pot_range = range_pot(pot=pot, small_blind_amount=settings['small_blind_amount'])
 
     select_sql_file = open(sql_path + 'select_decision_points.sql')
     select_sql = select_sql_file.read()
@@ -334,8 +383,9 @@ def decision_point_based_action(poker_db, database, phase, nr, step, position, s
         select_sql_file.close()
         
         sql_insert_decision_points(poker_db=poker_db, database=database, phase=phase, nr=nr,\
-            position=position, hand_db_format=hand_db_format, stack=stack, pot=pot,\
-            flop1=flop1, flop2=flop2, flop3=flop3, turn=turn, river=river, history=history[0][0])
+            position=position, hand_db_format=hand_db_format, hand_strength=hand_strength,\
+            improv_rate=improv_rate, stack_range=stack_range, pot_range=pot_range,\
+            history=history[0][0])
         
         for action in valid_actions:
             if action['action'] != 'raise':

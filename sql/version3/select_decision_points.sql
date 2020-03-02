@@ -11,9 +11,9 @@ WHERE
   AND d.position = {position}
   AND d.hand_db_format = '{hand_db_format}'
   AND d.hand_strenght = {hand_strength}
-  AND d.improv_rate = {improv_rate}
-  AND d.stack_range = {stack_range}
-  AND d.pot_range = {pot_range}
+  AND d.improv_rate = '{improv_rate}'
+  AND d.stack_range = '{stack_range}'
+  AND d.pot_range = '{pot_range}'
   AND d.history in (
 
   SELECT
@@ -27,9 +27,9 @@ WHERE
     UNION
     SELECT CONCAT('"position":', json_array(GROUP_CONCAT(h.position))) AS jobj FROM {database}.history h WHERE 1 = 1 AND h.game_id = {game_id} AND h.step < {step}
     UNION
-    SELECT CONCAT('"stack":', json_array(GROUP_CONCAT(h.stack))) AS jobj FROM {database}.history h WHERE 1 = 1 AND h.game_id = {game_id} AND h.step < {step}
+    SELECT CONCAT('"stack_range":', json_array(GROUP_CONCAT('"', h.stack_range, '"'))) AS jobj FROM {database}.history h WHERE 1 = 1 AND h.game_id = {game_id} AND h.step < {step}
     UNION
-    SELECT CONCAT('"pot":', json_array(GROUP_CONCAT(h.pot))) AS jobj FROM {database}.history h WHERE 1 = 1 AND h.game_id = {game_id} AND h.step < {step}
+    SELECT CONCAT('"pot_range":', json_array(GROUP_CONCAT('"', h.pot_range, '"'))) AS jobj FROM {database}.history h WHERE 1 = 1 AND h.game_id = {game_id} AND h.step < {step}
     UNION
     SELECT CONCAT('"flop1":', json_array(GROUP_CONCAT(CONCAT('"', h.flop1, '"')))) AS jobj FROM {database}.history h WHERE 1 = 1 AND h.game_id = {game_id} AND h.step < {step}
     UNION
@@ -43,7 +43,7 @@ WHERE
     UNION
     SELECT CONCAT('"move":', json_array(GROUP_CONCAT(CONCAT('"', h.action, '"')))) AS jobj FROM {database}.history h WHERE 1 = 1 AND h.game_id = {game_id} AND h.step < {step}
     UNION
-    SELECT CONCAT('"amount":', json_array(GROUP_CONCAT(h.amount))) AS jobj FROM {database}.history h WHERE 1 = 1 AND h.game_id = {game_id} AND h.step < {step}
+    SELECT CONCAT('"amount_potrate":', json_array(GROUP_CONCAT('"', h.amount_potrate, '"'))) AS jobj FROM {database}.history h WHERE 1 = 1 AND h.game_id = {game_id} AND h.step < {step}
   
   ) s
 

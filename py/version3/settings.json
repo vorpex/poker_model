@@ -1,5 +1,7 @@
 {
     "ante_amount": 0,
+    "deuces_path": "c:/ProgramData/Anaconda3/Lib/site-packages/deuces/",
+    "holdem_calc_path": "../holdem_calc/",
     "max_round": 1,
     "nr": 0,
     "player_num": 6,

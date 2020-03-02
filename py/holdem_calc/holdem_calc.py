@@ -63,9 +63,10 @@ def run_simulation(hole_cards, num, exact, given_board, deck, verbose):
                                      board_length, given_board, winner_list,
                                      result_histograms)
     if verbose:
-        holdem_functions.print_results(hole_cards, winner_list,
+        hist = holdem_functions.print_results(hole_cards, winner_list,
                                        result_histograms)
-    return holdem_functions.find_winning_percentage(winner_list)
+    # return holdem_functions.find_winning_percentage(winner_list), hist
+    return hist
 
 if __name__ == '__main__':
     start = time.time()
