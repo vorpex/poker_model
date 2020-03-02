@@ -478,10 +478,14 @@ def range_stack(stack, small_blind_amount):
     '''create ranges from stack'''
 
     stack = stack / small_blind_amount
-    if stack >= 200:
-        rng = '200+'
+    if stack < 200:
+        rng = str(int(stack / 10) * 10) + '-' + str((int(stack / 10) + 1) * 10)
+    elif stack >= 200 and stack < 1000:
+        rng = str(int(stack / 50) * 50) + '-' + str((int(stack / 50) + 1) * 50)
+    elif stack >= 1000 and stack < 2000:
+        rng = str(int(stack / 100) * 100) + '-' + str((int(stack / 100) + 1) * 100)
     else:
-        rng = str(int(stack / 25) * 25) + '-' + str((int(stack / 25) + 1) * 25)
+        rng = '2000+'
     
     return rng
 
