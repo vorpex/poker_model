@@ -6,4 +6,4 @@ FROM
 
 WHERE
   1 = 1
-  AND t.table_schema = {database}
+  AND t.table_schema = '{database}'
