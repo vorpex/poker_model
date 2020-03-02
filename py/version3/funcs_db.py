@@ -24,8 +24,9 @@ sql_path = settings['sql_path']
 def sql_delete_allrows(poker_db, database, table):
     '''delete all rows from table'''
 
-    delete_sql_file = open(sql_path + 'delete_allrows.sql').read()
-    delete_sql = eval(f'f"""{delete_sql_file}"""')
+    delete_sql_file = open(sql_path + 'delete_allrows.sql')
+    delete_sql = delete_sql_file.read()
+    delete_sql = eval(f'f"""{delete_sql}"""')
 
     # poker_db = mysql.connector.connect(user=settings['sql_user'],\
     #                                    host=settings['sql_host'],\
@@ -40,10 +41,11 @@ def sql_delete_allrows(poker_db, database, table):
     return None
 
 def sql_select_tables(poker_db, database):
-    '''query name of all tables from poker_version3 database'''
+    '''query name of all tables from database'''
 
-    select_sql_file = open(sql_path + 'select_tables.sql').read()
-    select_sql = eval(f'f"""{select_sql_file}"""')
+    select_sql_file = open(sql_path + 'select_tables.sql')
+    select_sql = select_sql_file.read()
+    select_sql = eval(f'f"""{select_sql}"""')
 
     # poker_db = mysql.connector.connect(user=settings['sql_user'],\
     #                                    host=settings['sql_host'],\
@@ -58,16 +60,22 @@ def sql_select_tables(poker_db, database):
 
     return tables[0]
 
-def sql_games_max_id(poker_db):
-    '''query max id from poker_version3.games table'''
+def sql_games_max_id(poker_db, database):
+    '''query max id from games table'''
 
-    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version3')
+    select_sql_file = open(sql_path + 'select_games_max_id.sql')
+    select_sql = select_sql_file.read()
+    select_sql = eval(f'f"""{select_sql}"""')
+
+    # poker_db = mysql.connector.connect(user=settings['sql_user'],\
+    #                                    host=settings['sql_host'],\
+    #                                    database=settings['sql_database'])
     poker_cursor = poker_db.cursor()
-    select_sql_file = open(sql_path + 'select_games_max_id.sql').read()
-    select_sql = eval(f'f"""{select_sql_file}"""')
     poker_cursor.execute(select_sql)
     poker_result = poker_cursor.fetchall()
     # poker_db.close()
+
+    select_sql_file.close()
 
     return poker_result[0][0]
 
@@ -126,9 +134,10 @@ def sql_possible_moves_features(poker_db, decision_point_id, action):
 
     return poker_result[0][0], poker_result[0][1]
 
-def sql_insert_games(poker_db, index, player_num, small_blind_amount, ante_amount, uuid, name, stack, position, \
-    card1, card2, hand_db_format, flop1, flop2, flop3, turn, river, final_stack):
-    '''insert rows into poker_version3.games table'''
+def sql_insert_games(database, poker_db, index, player_num, small_blind_amount, ante_amount,\
+    uuid, name, stack, position, card1, card2, hand_db_format, flop1, flop2, flop3, turn,\
+    river, final_stack):
+    '''insert rows into games table'''
 
     if position == 1:
         position_name = 'SB'
@@ -143,13 +152,19 @@ def sql_insert_games(poker_db, index, player_num, small_blind_amount, ante_amoun
     else:
         position_name = 'DEALER'
 
-    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version3')
+    insert_sql_file = open(sql_path + 'insert_games.sql')
+    insert_sql = insert_sql_file.read()
+    insert_sql = eval(f'f"""{insert_sql}"""')
+
+    # poker_db = mysql.connector.connect(user=settings['sql_user'],\
+    #                                    host=settings['sql_host'],\
+    #                                    database=settings['sql_database'])
     poker_cursor = poker_db.cursor()
-    insert_sql_file = open(sql_path + 'insert_games.sql').read()
-    insert_sql = eval(f'f"""{insert_sql_file}"""')
     poker_cursor.execute(insert_sql)
     poker_cursor.execute('COMMIT')
     # poker_db.close()
+
+    insert_sql_file.close()
 
     return None
 
