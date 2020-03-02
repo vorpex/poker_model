@@ -506,9 +506,7 @@ def range_potrate(amount, pot, action):
     if pot != 0:
         rate = amount / pot
 
-    if action == 'CALL':
-        rng = '1'
-    elif action != 'CALL' and pot == 0:
+    if action == 'CALL' or (action != 'CALL' and pot == 0):
         rng = '1'
     elif action != 'CALL' and pot != 0 and rate < 2:
         rng = str(int(rate / 0.2) * 0.2) + '-' + str((int(rate / 0.2) + 1) * 0.2)
