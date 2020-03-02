@@ -511,9 +511,9 @@ def range_potrate(amount, pot, action):
     elif action != 'CALL' and pot == 0:
         rng = '3+'
     elif action != 'CALL' and pot != 0 and rate < 2:
-        rng = str(int(pot / 0.2) * 0.2) + '-' + str((int(pot / 0.2) + 1) * 0.2)
+        rng = str(int(rate / 0.2) * 0.2) + '-' + str((int(rate / 0.2) + 1) * 0.2)
     elif action != 'CALL' and pot != 0 and rate >= 2 and rate < 3:
-        rng = str(int(pot / 0.5) * 0.5) + '-' + str((int(pot / 0.5) + 1) * 0.5)
+        rng = str(int(rate / 0.5) * 0.5) + '-' + str((int(rate / 0.5) + 1) * 0.5)
     else:
         rng = '3+'
     
