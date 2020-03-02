@@ -1,7 +1,7 @@
 DELETE
 
 FROM
-  poker_version3.{table}
+  {database}.{table}
 
 WHERE
   1 = 1

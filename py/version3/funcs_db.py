@@ -12,34 +12,49 @@
 # select_sql = eval(f'f"""{select_sql_file}"""')
 # select_sql_file.close()
 
+import json
 import numpy as np
 
-sql_path = 'c:\\Users\\adam.sohonyai\\Documents\\GitHub\\poker_model\\sql\\version3\\'
+json_data = open(file='./settings.json', mode='r')
+settings = json.load(json_data)
+json_data.close()
 
-def sql_delete_all(poker_db, table):
+sql_path = settings['sql_path']
+
+def sql_delete_allrows(poker_db, database, table):
     '''delete all rows from table'''
 
-    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version3')
-    poker_cursor = poker_db.cursor()
-    delete_sql_file = open(sql_path + 'delete_all.sql').read()
+    delete_sql_file = open(sql_path + 'delete_allrows.sql').read()
     delete_sql = eval(f'f"""{delete_sql_file}"""')
+
+    # poker_db = mysql.connector.connect(user=settings['sql_user'],\
+    #                                    host=settings['sql_host'],\
+    #                                    database=settings['sql_database'])
+    poker_cursor = poker_db.cursor()
     poker_cursor.execute(delete_sql)
     poker_cursor.execute('COMMIT')
     # poker_db.close()
 
+    delete_sql_file.close()
+
     return None
 
-def sql_select_tables(poker_db):
+def sql_select_tables(poker_db, database):
     '''query name of all tables from poker_version3 database'''
 
-    # poker_db = mysql.connector.connect(user='root', host='127.0.0.1', database='poker_version3')
-    poker_cursor = poker_db.cursor()
     select_sql_file = open(sql_path + 'select_tables.sql').read()
     select_sql = eval(f'f"""{select_sql_file}"""')
+
+    # poker_db = mysql.connector.connect(user=settings['sql_user'],\
+    #                                    host=settings['sql_host'],\
+    #                                    database=settings['sql_database'])
+    poker_cursor = poker_db.cursor()
     poker_cursor.execute(select_sql)
     poker_result = poker_cursor.fetchall()
     tables = [[*table] for table in zip(*poker_result)]
     # poker_db.close()
+
+    select_sql_file.close()
 
     return tables[0]
 
