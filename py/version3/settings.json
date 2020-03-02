@@ -4,6 +4,7 @@
     "nr": 0,
     "player_num": 6,
     "pot": 0,
+    "side": 0,
     "small_blind_amount": 10,
     "stack": 2000,
     "step": 0,
