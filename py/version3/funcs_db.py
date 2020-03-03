@@ -238,8 +238,8 @@ def sql_insert_decision_points(poker_db, database, phase, nr, position, hand_db_
 
     return None
 
-def sql_insert_possible_moves(poker_db, database, action, bet_amount, counter=1, total_profit=1,\
-    expected_value=1):
+def sql_insert_possible_moves(poker_db, database, action, bet_amount_range, counter=1,\
+    total_profit=1, expected_value=1):
     '''insert rows into possible_moves table'''
 
     decision_point_id = sql_decision_points_max_id(poker_db=poker_db, database=database)
@@ -262,7 +262,7 @@ def sql_insert_possible_moves(poker_db, database, action, bet_amount, counter=1,
 
     return None
 
-def decision_point_based_action(poker_db, database, phase, nr, step, position, stack, pot, \
+def decision_point_based_action(poker_db, database, phase, nr, step, position, stack, pot,\
     flop1, flop2, flop3, turn, river, valid_actions):
     '''decision point calculations'''
 
@@ -283,7 +283,7 @@ def decision_point_based_action(poker_db, database, phase, nr, step, position, s
     
     if phase == 'preflop':
         hand_strength = 0
-        improv_rate = dict()
+        improv_rate = ''
     else:
         board_hs = []
         board_ir = []
@@ -314,9 +314,12 @@ def decision_point_based_action(poker_db, database, phase, nr, step, position, s
         hand_ir = [crd1, crd2]
         
         hand_strength = de().evaluate(board_hs, hand_hs)
-        improv_rate = holdem_calc.calculate(board_ir, False, 1, None, hand_ir, True)[1]
-        for key in improv_rate.keys():
-            improv_rate[key] = round(improv_rate[key], 4)
+        improv_rate = []
+        improv_rate_dict = holdem_calc.calculate(board_ir, False, 1, None, hand_ir, True)[1]
+        for key in improv_rate_dict.keys():
+            improv_rate.append(round(improv_rate_dict[key], 4))
+        
+        improv_rate = '-'.join([str(prob) for prob in improv_rate])
 
     select_sql_file.close()
 
@@ -367,7 +370,7 @@ def decision_point_based_action(poker_db, database, phase, nr, step, position, s
             'action': final_action
         }
 
-        return final_action, final_action_amount, decision
+        return final_action, int(final_action_amount), decision
     else:
         select_sql_file = open(sql_path + 'select_decision_points_history.sql')
         select_sql = select_sql_file.read()
@@ -390,11 +393,11 @@ def decision_point_based_action(poker_db, database, phase, nr, step, position, s
         for action in valid_actions:
             if action['action'] != 'raise':
                 sql_insert_possible_moves(poker_db=poker_db, database=database,\
-                    action=action['action'], bet_amount=action['amount'])
+                    action=action['action'], bet_amount_range=action['amount'])
             else:
                 # amount = np.random.randint(action['amount']['min'], action['amount']['max'] + 1)
                 sql_insert_possible_moves(poker_db=poker_db, database=database,\
-                    action=action['action'], bet_amount=action['amount']['min'])
+                    action=action['action'], bet_amount_range=action['amount']['min'])
 
     # poker_db.close()
 
