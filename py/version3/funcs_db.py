@@ -225,7 +225,7 @@ def sql_insert_decision_points(poker_db, database, phase, nr, position, hand_db_
     insert_sql_file = open(sql_path + 'insert_decision_points.sql')
     insert_sql = insert_sql_file.read()
     insert_sql = eval(f'f"""{insert_sql}"""')
-
+    
     # poker_db = mysql.connector.connect(user=settings['sql_user'],\
     #                                    host=settings['sql_host'],\
     #                                    database=settings['sql_database'])
@@ -280,46 +280,111 @@ def decision_point_based_action(poker_db, database, phase, nr, step, position, s
     poker_result = poker_cursor.fetchall()
 
     hand_db_format = poker_result[0][0]
+
+    crd1 = poker_result[0][1].replace(poker_result[0][1][-1:], poker_result[0][1][-1:].lower())
+    crd2 = poker_result[0][2].replace(poker_result[0][2][-1:], poker_result[0][2][-1:].lower())
+    hand_hs = [deuces.Card.new(crd1), deuces.Card.new(crd2)]
+    hand_ir = [crd1, crd2]
     
     if phase == 'preflop':
-        hand_strength = 0
-        improv_rate = ''
-    else:
-        board_hs = []
-        board_ir = []
-        if flop1 != '':
-            flop1_new = flop1[1:] + flop1[:1].lower()
-            board_hs.append(deuces.Card.new(flop1_new))
-            board_ir.append(flop1_new)
-        if flop2 != '':
-            flop2_new = flop2[1:] + flop2[:1].lower()
-            board_hs.append(deuces.Card.new(flop2_new))
-            board_ir.append(flop2_new)
-        if flop3 != '':
-            flop3_new = flop3[1:] + flop3[:1].lower()
-            board_hs.append(deuces.Card.new(flop3_new))
-            board_ir.append(flop3_new)
-        if turn != '':
-            turn_new = turn[1:] + turn[:1].lower()
-            board_hs.append(deuces.Card.new(turn_new))
-            board_ir.append(turn_new)
-        if river != '':
-            river_new = river[1:] + river[:1].lower()
-            board_hs.append(deuces.Card.new(river_new))
-            board_ir.append(river_new)
+        hand_strength = '0'
+        improv_rate = '0'
+    elif phase == 'flop':
+        flop1_new = flop1[1:] + flop1[:1].lower()
+        flop2_new = flop2[1:] + flop2[:1].lower()
+        flop3_new = flop3[1:] + flop3[:1].lower()
+        board_hs = [
+            deuces.Card.new(flop1_new),
+            deuces.Card.new(flop2_new),
+            deuces.Card.new(flop3_new)
+        ]
+        board_ir = [
+            flop1_new,
+            flop2_new,
+            flop3_new
+        ]
         
-        crd1 = poker_result[0][1].replace(poker_result[0][1][-1:], poker_result[0][1][-1:].lower())
-        crd2 = poker_result[0][2].replace(poker_result[0][2][-1:], poker_result[0][2][-1:].lower())
-        hand_hs = [deuces.Card.new(crd1), deuces.Card.new(crd2)]
-        hand_ir = [crd1, crd2]
+        hand_strength = str(int(de().evaluate(board_hs, hand_hs) / 200) * 200) + '-' +\
+            str((int(de().evaluate(board_hs, hand_hs) / 200) + 1) * 200)
         
-        hand_strength = de().evaluate(board_hs, hand_hs)
         improv_rate = []
         improv_rate_dict = holdem_calc.calculate(board_ir, False, 1, None, hand_ir, True)[1]
         for key in improv_rate_dict.keys():
             improv_rate.append(round(improv_rate_dict[key], 4))
         
-        improv_rate = '-'.join([str(prob) for prob in improv_rate])
+        improv_rate = ';'.join([
+            str(round(int(prob / 0.05) * 0.05, 2)) + '-' +\
+            str(round((int(prob / 0.05) + 1) * 0.05, 2)) \
+                for prob in improv_rate
+        ])
+    elif phase == 'turn':
+        flop1_new = flop1[1:] + flop1[:1].lower()
+        flop2_new = flop2[1:] + flop2[:1].lower()
+        flop3_new = flop3[1:] + flop3[:1].lower()
+        turn_new = turn[1:] + turn[:1].lower()
+        board_hs = [
+            deuces.Card.new(flop1_new),
+            deuces.Card.new(flop2_new),
+            deuces.Card.new(flop3_new),
+            deuces.Card.new(turn_new)
+        ]
+        board_ir = [
+            flop1_new,
+            flop2_new,
+            flop3_new,
+            turn_new
+        ]
+        
+        hand_strength = str(int(de().evaluate(board_hs, hand_hs) / 200) * 200) + '-' +\
+            str((int(de().evaluate(board_hs, hand_hs) / 200) + 1) * 200)
+        
+        improv_rate = []
+        improv_rate_dict = holdem_calc.calculate(board_ir, False, 1, None, hand_ir, True)[1]
+        for key in improv_rate_dict.keys():
+            improv_rate.append(round(improv_rate_dict[key], 4))
+        
+        improv_rate = ';'.join([
+            str(round(int(prob / 0.05) * 0.05, 2)) + '-' +\
+            str(round((int(prob / 0.05) + 1) * 0.05, 2)) \
+                for prob in improv_rate
+        ])
+    elif phase == 'river':
+        flop1_new = flop1[1:] + flop1[:1].lower()
+        flop2_new = flop2[1:] + flop2[:1].lower()
+        flop3_new = flop3[1:] + flop3[:1].lower()
+        turn_new = turn[1:] + turn[:1].lower()
+        river_new = river[1:] + river[:1].lower()
+        board_hs = [
+            deuces.Card.new(flop1_new),
+            deuces.Card.new(flop2_new),
+            deuces.Card.new(flop3_new),
+            deuces.Card.new(turn_new),
+            deuces.Card.new(river_new)
+        ]
+        board_ir = [
+            flop1_new,
+            flop2_new,
+            flop3_new,
+            turn_new,
+            river_new
+        ]
+        
+        hand_strength = str(int(de().evaluate(board_hs, hand_hs) / 200) * 200) + '-' +\
+            str((int(de().evaluate(board_hs, hand_hs) / 200) + 1) * 200)
+        
+        improv_rate = []
+        improv_rate_dict = holdem_calc.calculate(board_ir, False, 1, None, hand_ir, True)[1]
+        for key in improv_rate_dict.keys():
+            improv_rate.append(round(improv_rate_dict[key], 4))
+        
+        improv_rate = ';'.join([
+            str(round(int(prob / 0.05) * 0.05, 2)) + '-' +\
+            str(round((int(prob / 0.05) + 1) * 0.05, 2)) \
+                for prob in improv_rate
+        ])
+    else:
+        hand_strength = '0'
+        improv_rate = '0'
 
     select_sql_file.close()
 
@@ -333,7 +398,7 @@ def decision_point_based_action(poker_db, database, phase, nr, step, position, s
         ' CONCAT(\'{\',' +\
         ' GROUP_CONCAT(s.jobj SEPARATOR \',\\' + 'n\'),' +\
         ' \'}\'), \'[\"\', \'[\'), \'\"]\', \']\'), \'\\\\\', \'\') as jobj')
-
+    
     poker_cursor.execute(select_sql)
     poker_result = poker_cursor.fetchall()
 
