@@ -1,0 +1,17 @@
+{
+    "ante_amount": 0,
+    "deuces_path": "c:/ProgramData/Anaconda3/Lib/site-packages/deuces/",
+    "holdem_calc_path": "../holdem_calc/",
+    "max_round": 1,
+    "nr": 0,
+    "player_num": 6,
+    "pot": 0,
+    "side": 0,
+    "small_blind_amount": 10,
+    "stack": 2000,
+    "step": 0,
+    "sql_database": "poker_reinforcement_model",
+    "sql_host": "127.0.0.1",
+    "sql_path": "../../sql/reinforcement_model/",
+    "sql_user": "root"
+}
