@@ -285,11 +285,8 @@ def decision_point_based_action(poker_db, database, phase, nr, step, position, s
     crd2 = poker_result[0][2].replace(poker_result[0][2][-1:], poker_result[0][2][-1:].lower())
     hand_hs = [deuces.Card.new(crd1), deuces.Card.new(crd2)]
     hand_ir = [crd1, crd2]
-    
-    if phase == 'preflop':
-        hand_strength = '0'
-        improv_rate = '0'
-    elif phase == 'flop':
+
+    if phase == 'flop':
         flop1_new = flop1[1:] + flop1[:1].lower()
         flop2_new = flop2[1:] + flop2[:1].lower()
         flop3_new = flop3[1:] + flop3[:1].lower()
@@ -454,15 +451,19 @@ def decision_point_based_action(poker_db, database, phase, nr, step, position, s
             position=position, hand_db_format=hand_db_format, hand_strength=hand_strength,\
             improv_rate=improv_rate, stack_range=stack_range, pot_range=pot_range,\
             history=history[0][0])
-        
+
         for action in valid_actions:
             if action['action'] != 'raise':
                 sql_insert_possible_moves(poker_db=poker_db, database=database,\
                     action=action['action'], bet_amount_range=action['amount'])
             else:
                 # amount = np.random.randint(action['amount']['min'], action['amount']['max'] + 1)
+                for i in range(1, int(action['amount']['max'] / action['amount']['min']) + 1):
+                    sql_insert_possible_moves(poker_db=poker_db, database=database,\
+                        action=action['action'], bet_amount_range=action['amount']['min'] * i)
+                
                 sql_insert_possible_moves(poker_db=poker_db, database=database,\
-                    action=action['action'], bet_amount_range=action['amount']['min'])
+                        action=action['action'], bet_amount_range=action['amount']['max'])
 
     # poker_db.close()
 
