@@ -1,1 +1,1 @@
-# poker model
+# reinforcement poker model

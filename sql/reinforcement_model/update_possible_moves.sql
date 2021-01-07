@@ -9,4 +9,4 @@ SET
 WHERE
   1 = 1
   AND p.decision_point_id = {decision_point_id}
-  AND p.action = '{action}'
+  AND p.id = {id}

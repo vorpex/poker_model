@@ -21,9 +21,9 @@ VALUES (
   '{river}',
   '{action}',
   {amount},
-  '{amount_potrate}',
   {new_stack},
   '{new_stack_range}',
   {new_pot},
-  '{new_pot_range}'
+  '{new_pot_range}',
+  '{amount_potrate}'
 )

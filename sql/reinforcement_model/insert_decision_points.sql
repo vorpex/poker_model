@@ -9,8 +9,7 @@ VALUES (
   {nr},
   {position},
   '{hand_db_format}',
-  '{hand_strength}',
-  '{improv_rate}',
+  '{win_rate}',
   '{stack_range}',
   '{pot_range}',
   '{history}'
