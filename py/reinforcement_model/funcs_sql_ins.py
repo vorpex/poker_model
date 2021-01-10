@@ -96,3 +96,18 @@ def sql_insert_possible_moves(poker_db, database, sql_path, action, bet_amount_r
     insert_sql_file.close()
 
     return None
+
+def sql_insert_winners(poker_db, database, sql_path, index, nr, uuid, winner_stack):
+    '''insert rows into winners table'''
+
+    insert_sql_file = open(sql_path + 'insert_winners.sql')
+    insert_sql = insert_sql_file.read()
+    insert_sql = eval(f'f"""{insert_sql}"""')
+    
+    poker_cursor = poker_db.cursor()
+    poker_cursor.execute(insert_sql)
+    poker_cursor.execute('COMMIT')
+
+    insert_sql_file.close()
+
+    return None
