@@ -1,0 +1,3 @@
+# this command works if [table] already exist in DB
+
+mysqlimport -u root poker_reinforcement_model --columns=col1,col2,col3,... --ignore-lines=1 --line-terminated-by="\r\n" --fields-terminated-by="," --fields-enclosed-by="'" --local "path/to/csv/[table].csv"
